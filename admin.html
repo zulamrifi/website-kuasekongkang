@@ -1271,9 +1271,10 @@
     <div class="frow single">
       <div class="fgroup">
         <label>Ganti Foto</label>
-        <div class="photo-upload">
-          <div class="pu-icon">🔄</div>
-          <p><strong>Klik untuk ganti foto</strong></p>
+        <div class="fgroup">
+        <label>URL Foto Petugas</label>
+        <input type="url" id="petugasFoto" placeholder="https://..." style="width:100%" />
+        <span class="hint">Masukkan link foto dari penyimpanan online (Pastikan akses publik).</span>
         </div>
       </div>
     </div>
@@ -1342,38 +1343,86 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== NAVIGATION =====
-function showPanel(id, el) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
+<script type="module">
+  // Import Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, get, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  el.classList.add('active');
-
-  const titles = {
-    dashboard: ['Dashboard', 'Ringkasan aktivitas KUA'],
-    hero: ['Header & Hero', 'Edit teks dan elemen halaman utama'],
-    pengumuman: ['Pengumuman', 'Kelola teks pengumuman berjalan'],
-    petugas: ['Petugas KUA', 'Kelola data petugas dan foto'],
-    statistik: ['Statistik', 'Perbarui data dan grafik pernikahan'],
-    ulasan: ['Ulasan', 'Kelola testimoni masyarakat'],
-    materi: ['Materi Bimwin', 'Kelola materi PDF dan video'],
-    konsultasi: ['Konsultasi Masuk', 'Pesan dari pengunjung website'],
-    info: ['Info Kantor', 'Alamat, telepon, dan jam operasional'],
-    footer: ['Footer', 'Edit teks dan tautan footer'],
-    seo: ['SEO & Meta', 'Pengaturan mesin pencari'],
+  // TODO: GANTI DENGAN CONFIG FIREBASE ANDA
+  const firebaseConfig = {
+    apiKey: "API_KEY_ANDA",
+    authDomain: "PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://PROJECT_ID-default-rtdb.firebaseio.com",
+    projectId: "PROJECT_ID",
+    storageBucket: "PROJECT_ID.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID"
   };
 
-  if (titles[id]) {
-    document.getElementById('topbarTitle').textContent = titles[id][0];
-    document.getElementById('topbarSub').textContent = titles[id][1];
-  }
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth(app);
 
-  // Close mobile sidebar
-  closeSidebar();
-}
+  let currentEditId = null;
 
-// ===== ACCORDION =====
+  // ===== AUTENTIKASI (Hiding Credentials) =====
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById('modal-login').classList.remove('open');
+      loadAllData(); // Load data hanya jika sudah login
+    } else {
+      document.getElementById('modal-login').classList.add('open');
+    }
+  });
+
+  window.loginAdmin = () => {
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
+    signInWithEmailAndPassword(auth, email, pass)
+      .then(() => showToast('✅ Login Berhasil!'))
+      .catch((error) => alert('Login Gagal: ' + error.message));
+  };
+
+  window.logoutAdmin = () => {
+    signOut(auth).then(() => window.location.reload());
+  };
+
+  window.updatePasswordAdmin = () => {
+    const user = auth.currentUser;
+    const newPass = document.getElementById('newAdminPassword').value;
+    if(newPass.length < 6) return alert("Password minimal 6 karakter!");
+    updatePassword(user, newPass).then(() => {
+      showToast('✅ Password berhasil diubah!');
+      document.getElementById('newAdminPassword').value = '';
+    }).catch(err => alert("Gagal ubah password: " + err.message));
+  };
+
+  // ===== FUNGSI CRUD FIREBASE =====
+  function loadAllData() {
+    // Load Petugas
+    onValue(ref(db, 'petugas'), (snapshot) => {
+      const tbody = document.getElementById('petugasTable');
+      tbody.innerHTML = '';
+      snapshot.forEach(child => {
+        const data = child.val();
+        tbody.innerHTML += `
+          <tr>
+            <td><img src="${data.foto || ''}" alt="Foto" style="width:36px;height:36px;border-radius:10px;object-fit:cover;"></td>
+            <td><strong>${data.nama}</strong></td>
+            <td>${data.jabatan}</td>
+            <td>${data.nip}</td>
+            <td><span class="badge badge-green">Aktif</span></td>
+            <td>
+              <div class="table-actions">
+                <button class="btn-del" onclick="hapusData('petugas', '${child.key}')">🗑 Hapus</button>
+              </div>
+            </td>
+          </tr>`;
+      });
+    });
+    
+     // ===== ACCORDION =====
 function toggleSection(header) {
   const body = header.nextElementSibling;
   const toggle = header.querySelector('.fs-toggle');
@@ -1430,6 +1479,89 @@ function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').style.display = 'none';
 }
+
+
+  window.simpanPetugasBaru = () => {
+    // Ambil value dari input modal tambah petugas (pastikan id input disesuaikan di HTML)
+    const nama = document.querySelector('#modal-addPetugas input[placeholder="Nama lengkap dengan gelar"]').value;
+    const jabatan = document.querySelector('#modal-addPetugas select').value;
+    const nip = document.querySelector('#modal-addPetugas input[placeholder="Nomor Induk Pegawai"]').value;
+    const foto = document.getElementById('petugasFoto').value; // Mengambil dari URL online
+
+    push(ref(db, 'petugas'), { nama, jabatan, nip, foto }).then(() => {
+      closeModal('addPetugas');
+      showToast('✅ Petugas tersimpan di Firebase!');
+    });
+  };
+
+  window.hapusData = (path, id) => {
+    if(confirm('Hapus data ini?')) {
+      remove(ref(db, `${path}/${id}`));
+      showToast('🗑 Data terhapus.');
+    }
+  };
+
+  window.savePengumuman = () => {
+    const teks = document.querySelector('#panel-pengumuman textarea').value;
+    set(ref(db, 'pengumuman'), { teks });
+    showToast('💾 Pengumuman disimpan!');
+  };
+
+  const titles = {
+    dashboard: ['Dashboard', 'Ringkasan aktivitas KUA'],
+    hero: ['Header & Hero', 'Edit teks dan elemen halaman utama'],
+    pengumuman: ['Pengumuman', 'Kelola teks pengumuman berjalan'],
+    petugas: ['Petugas KUA', 'Kelola data petugas dan foto'],
+    statistik: ['Statistik', 'Perbarui data dan grafik pernikahan'],
+    ulasan: ['Ulasan', 'Kelola testimoni masyarakat'],
+    materi: ['Materi Bimwin', 'Kelola materi PDF dan video'],
+    konsultasi: ['Konsultasi Masuk', 'Pesan dari pengunjung website'],
+    info: ['Info Kantor', 'Alamat, telepon, dan jam operasional'],
+    footer: ['Footer', 'Edit teks dan tautan footer'],
+    seo: ['SEO & Meta', 'Pengaturan mesin pencari'],
+  };
+
+  if (titles[id]) {
+    document.getElementById('topbarTitle').textContent = titles[id][0];
+    document.getElementById('topbarSub').textContent = titles[id][1];
+  }
+
+  // Close mobile sidebar
+  closeSidebar();
+}
+  window.showPanel = function(id, el) { /* ... isi fungsi lama ... */ };
+  window.closeModal = function(id) { document.getElementById('modal-' + id).classList.remove('open'); };
+  window.showToast = function(msg) { /* ... isi fungsi lama ... */ };
+
+  <div class="modal-overlay" id="modal-login" style="background: var(--green-dark);">
+  <div class="modal-box" style="max-width: 400px; margin: auto;">
+    <div class="logo-circle" style="margin: 0 auto 20px;">KUA</div>
+    <h3 style="text-align: center;">Login Administrator</h3>
+    <div class="frow single">
+      <div class="fgroup"><label>Email</label><input type="email" id="loginEmail" placeholder="admin@email.com" /></div>
+    </div>
+    <div class="frow single">
+      <div class="fgroup"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••" /></div>
+    </div>
+    <button class="btn-confirm" style="width: 100%; margin-top: 10px;" onclick="loginAdmin()">Masuk</button>
+  </div>
+</div>
+
+<div class="panel" id="panel-pengaturan">
+  <div class="card">
+    <div class="card-header"><h3>⚙️ Pengaturan Keamanan Akun</h3></div>
+    <div class="card-body">
+      <div class="frow single">
+        <div class="fgroup">
+          <label>Password Baru</label>
+          <input type="password" id="newAdminPassword" placeholder="Masukkan password baru (min 6 karakter)" />
+          <span class="hint">Password ini dienkripsi di server Firebase, tidak akan terlihat di source code.</span>
+        </div>
+      </div>
+      <button class="btn-save" onclick="updatePasswordAdmin()">💾 Simpan Password</button>
+    </div>
+  </div>
+</div>
 </script>
 </body>
 </html>
