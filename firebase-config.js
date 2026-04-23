@@ -2,18 +2,19 @@
 // KONFIGURASI FIREBASE - GANTI DENGAN DATA PROJECT ANDA
 // Cara mendapatkan: Firebase Console → Project Settings → Your apps → SDK setup
 // ============================================================
-const FIREBASE_CONFIG = {
-  apiKey: "GANTI_API_KEY_ANDA",
-  authDomain: "GANTI_PROJECT_ID.firebaseapp.com",
-  projectId: "GANTI_PROJECT_ID",
-  storageBucket: "GANTI_PROJECT_ID.appspot.com",
-  messagingSenderId: "GANTI_MESSAGING_SENDER_ID",
-  appId: "GANTI_APP_ID"
+const firebaseConfig = {
+  apiKey: "AIzaSyA95tw-ECPzfIH9eJmi3VxFYoGzRQdiwWM",
+  authDomain: "website-kuasekongkang.firebaseapp.com",
+  databaseURL: "https://website-kuasekongkang-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "website-kuasekongkang",
+  storageBucket: "website-kuasekongkang.firebasestorage.app",
+  messagingSenderId: "757740985056",
+  appId: "1:757740985056:web:fc85a3e18b17f9413d8e85"
 };
 
 // Link website eksternal - ganti dengan URL website Anda
 const EXTERNAL_LINKS = {
-  konsultasiKeagamaan: "https://konsultasi.website-anda.com",    // Website konsultasi keagamaan
-  kalkulatorWaris: "https://waris.website-anda.com",             // Kalkulator waris & zakat
-  arsipDigital: "https://arsip.website-anda.com"                 // Arsip digital
+  konsultasiKeagamaan: "https://konsultasi-kuasekongkang.vercel.app/",    // Website konsultasi keagamaan
+  kalkulatorWaris: "https://faraidh-zakat-kalkulator.vercel.app/",             // Kalkulator waris & zakat
+  arsipDigital: "https://arsipdigital-kuasekongkang.vercel.app/"                 // Arsip digital
 };
