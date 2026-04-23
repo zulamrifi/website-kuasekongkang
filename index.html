@@ -409,27 +409,18 @@ footer{background:var(--gd);color:rgba(255,255,255,.7);}
       </div>
     </a>
     <ul class="nav-links">
-      <li><a href="#hero">Beranda</a></li>
-      <li><a href="#petugas">Petugas</a></li>
-      <li><a href="#statistik">Statistik</a></li>
-      <!-- Konsultasi Dropdown -->
-      <li class="nav-dropdown">
-        <a href="#konsultasi">Konsultasi ▾</a>
-        <div class="nav-dropdown-menu">
-          <a href="#konsultasi"><span class="dm-icon">💬</span>Konsultasi Nikah</a>
-          <a href="#konsultasi"><span class="dm-icon">👨‍👩‍👧</span>Konsultasi Keluarga</a>
-          <a href="#konsultasi"><span class="dm-icon">📖</span>Konsultasi Hukum Islam</a>
-          <!-- LINK WEBSITE LUAR: Ganti URL sesuai website Anda -->
-          <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:6px 0;">
-          <a href="https://WEBSITE-KONSULTASI-ANDA.com" target="_blank"><span class="dm-icon">🌐</span>Portal Konsultasi Online</a>
-          <a href="https://WEBSITE-KALKULATOR-ANDA.com" target="_blank"><span class="dm-icon">⚖️</span>Kalkulator Waris & Zakat</a>
-          <a href="https://WEBSITE-ARSIP-ANDA.com" target="_blank"><span class="dm-icon">🗂️</span>Arsip Digital</a>
-        </div>
-      </li>
-      <li><a href="#materi">Materi</a></li>
-      <li><a href="#info">Kontak</a></li>
-      <li><a href="login.html" class="nav-cta">Admin</a></li>
-    </ul>
+  <li><a href="#hero">Beranda</a></li>
+  <li><a href="#petugas">Petugas</a></li>
+  <li><a href="#statistik">Statistik</a></li>
+  
+  <li><a href="https://konsultasi-kuasekongkang.vercel.app/" target="_blank">Konsultasi</a></li>
+  <li><a href="https://faraidh-zakat-kalkulator.vercel.app/" target="_blank">Kalkulator Waris Zakat</a></li>
+  <li><a href="https://arsipdigital-kuasekongkang.vercel.app/" target="_blank">Arsip Digital</a></li>
+  
+  <li><a href="#materi">Materi</a></li>
+  <li><a href="#info">Kontak</a></li>
+  <li><a href="login.html" class="nav-cta">Admin</a></li>
+</ul>
     <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -441,11 +432,11 @@ footer{background:var(--gd);color:rgba(255,255,255,.7);}
   <a href="#hero" onclick="toggleMenu()">🏠 Beranda</a>
   <a href="#petugas" onclick="toggleMenu()">👥 Petugas KUA</a>
   <a href="#statistik" onclick="toggleMenu()">📊 Statistik</a>
-  <a href="#konsultasi" onclick="toggleMenu()">💬 Konsultasi Nikah</a>
-  <a href="#konsultasi" onclick="toggleMenu()">👨‍👩‍👧 Konsultasi Keluarga</a>
-  <a href="https://WEBSITE-KONSULTASI-ANDA.com" target="_blank">🌐 Portal Konsultasi Online</a>
-  <a href="https://WEBSITE-KALKULATOR-ANDA.com" target="_blank">⚖️ Kalkulator Waris & Zakat</a>
-  <a href="https://WEBSITE-ARSIP-ANDA.com" target="_blank">🗂️ Arsip Digital</a>
+  
+  <a href="https://konsultasi-kuasekongkang.vercel.app/" target="_blank">💬 Konsultasi Online</a>
+  <a href="https://faraidh-zakat-kalkulator.vercel.app/" target="_blank">⚖️ Kalkulator Waris & Zakat</a>
+  <a href="https://arsipdigital-kuasekongkang.vercel.app/" target="_blank">🗂️ Arsip Digital</a>
+  
   <a href="#materi" onclick="toggleMenu()">📚 Materi Bimwin</a>
   <a href="#info" onclick="toggleMenu()">📍 Info Kantor</a>
   <a href="login.html">⚙️ Admin</a>
@@ -475,7 +466,7 @@ footer{background:var(--gd);color:rgba(255,255,255,.7);}
       <h1 class="hero-title">KUA Kecamatan <span id="heroTitle">Sekongkang</span></h1>
       <p class="hero-subtitle" id="heroSubtitle">Kantor Urusan Agama Kecamatan Sekongkang, Kabupaten Sumbawa Barat — melayani masyarakat dalam urusan pernikahan, keagamaan, dan pembinaan keluarga sakinah.</p>
       <div class="hero-btns">
-        <a href="#konsultasi" class="btn-primary" id="heroBtnPrimary">📋 Konsultasi Sekarang</a>
+        <a href="https://konsultasi-kuasekongkang.vercel.app/" target="_blank" class="btn-primary" id="heroBtnPrimary">📋 Konsultasi Sekarang</a>
         <a href="#layanan-strip" class="btn-outline" id="heroBtnSecond">Lihat Layanan ↓</a>
       </div>
     </div>
@@ -585,46 +576,6 @@ footer{background:var(--gd);color:rgba(255,255,255,.7);}
     <div class="materi-grid" id="materiList">
       <div class="materi-card"><div class="materi-thumb skeleton" style="height:160px"></div><div class="materi-info"><div class="skeleton" style="height:16px;width:80%;margin-bottom:8px"></div><div class="skeleton" style="height:12px;width:60%"></div></div></div>
       <div class="materi-card"><div class="materi-thumb skeleton" style="height:160px"></div><div class="materi-info"><div class="skeleton" style="height:16px;width:80%;margin-bottom:8px"></div><div class="skeleton" style="height:12px;width:60%"></div></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- KONSULTASI -->
-<section id="konsultasi" class="py100">
-  <div class="pattern-overlay"></div>
-  <div class="container">
-    <div class="konsul-grid">
-      <div class="konsul-left fade-in-l">
-        <div class="section-label">Layanan Konsultasi</div>
-        <h2 class="section-title">Konsultasi <span style="color:var(--gld)">Keagamaan</span></h2>
-        <p class="section-desc">Kami siap membantu Anda dengan konsultasi keagamaan yang terpercaya, profesional, dan gratis.</p>
-        <ul class="konsul-topics">
-          <li>Konsultasi Persiapan & Prosedur Nikah</li>
-          <li>Bimbingan Keluarga Sakinah</li>
-          <li>Hukum Islam & Fikih Munakahat</li>
-          <li>Perceraian & Mediasi Keluarga</li>
-          <li>Wakaf, Zakat, dan Kewarisan</li>
-          <li>Kegiatan Keagamaan Masyarakat</li>
-        </ul>
-      </div>
-      <div class="konsul-form fade-in">
-        <h3>📬 Kirim Pertanyaan Anda</h3>
-        <div class="form-group"><label>Nama Lengkap</label><input type="text" id="kNama" placeholder="Masukkan nama Anda"/></div>
-        <div class="form-group"><label>Nomor Telepon / WhatsApp</label><input type="tel" id="kTelp" placeholder="08xx-xxxx-xxxx"/></div>
-        <div class="form-group"><label>Topik Konsultasi</label>
-          <select id="kTopik">
-            <option value="">— Pilih Topik —</option>
-            <option>Persiapan & Prosedur Nikah</option>
-            <option>Bimbingan Keluarga</option>
-            <option>Hukum Islam / Fikih</option>
-            <option>Perceraian & Mediasi</option>
-            <option>Wakaf / Zakat / Waris</option>
-            <option>Lainnya</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Pertanyaan / Pesan</label><textarea id="kPesan" placeholder="Tuliskan pertanyaan atau pesan Anda di sini..."></textarea></div>
-        <button class="btn-submit" id="submitKonsul" onclick="submitKonsultasi()">✉ Kirim Pesan</button>
-      </div>
     </div>
   </div>
 </section>
