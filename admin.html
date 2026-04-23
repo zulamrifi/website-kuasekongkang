@@ -379,7 +379,10 @@ tr:hover td{background:#fafcfb;}
   <!-- ══ PETUGAS ══ -->
   <div class="panel" id="panel-petugas">
     <div class="card">
-      <div class="card-hd"><h3>👥 Daftar Petugas KUA</h3><button class="btn-add" onclick="openModal('addPetugas')">+ Tambah Petugas</button></div>
+      <div class="card-hd">
+      <h3>👥 Daftar Petugas KUA</h3>
+      <button class="btn-add" onclick="addPetugas()">+ Tambah Petugas</button>
+      </div>
       <div class="card-bd" style="padding:0"><div class="tbl-wrap"><table>
         <thead><tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Urutan</th><th>Aksi</th></tr></thead>
         <tbody id="petugasTable"><tr><td colspan="5" style="text-align:center;color:#a0aec0;padding:24px">Memuat data...</td></tr></tbody>
@@ -826,7 +829,27 @@ function renderPetugasTable(list){
 
 window.openModal = function(id){ document.getElementById('modal-'+id).classList.add('open'); };
 window.closeModal = function(id){ document.getElementById('modal-'+id).classList.remove('open'); };
-window.addPetugas = function(){ openModal('petugas'); };
+window.addPetugas = function() {
+  // 1. Reset semua input form ke kosong
+  document.getElementById('mp_id').value = "";
+  document.getElementById('mp_nama').value = "";
+  document.getElementById('mp_jabatan').value = "Kepala KUA";
+  document.getElementById('mp_badge').value = "";
+  document.getElementById('mp_urutan').value = 1;
+  document.getElementById('mp_inisial').value = "";
+  document.getElementById('mp_deskripsi').value = "";
+  document.getElementById('mp_foto').value = "";
+  
+  // 2. Bersihkan preview foto
+  const prev = document.getElementById('mp_preview');
+  if (prev) prev.innerHTML = '';
+  
+  // 3. Ubah judul modal kembali ke "Tambah"
+  document.getElementById('mPetugasTitle').textContent = '👤 Tambah Petugas';
+  
+  // 4. Buka modal dengan ID yang benar (modal-petugas)
+  openModal('petugas'); 
+};
 
 document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 
@@ -855,32 +878,55 @@ window.editPetugas = async function(id){
   openModal('petugas');
 };
 
-window.savePetugas = async function(){
-  const btn=document.getElementById('mpSaveBtn');
-  btn.disabled=true; btn.textContent='Menyimpan...';
-  const id=document.getElementById('mp_id').value;
-  const data={
-    nama:    document.getElementById('mp_nama').value.trim(),
+window.savePetugas = async function() {
+  const btn = document.getElementById('mpSaveBtn');
+  const id = document.getElementById('mp_id').value;
+  
+  // Validasi sederhana
+  const nama = document.getElementById('mp_nama').value.trim();
+  if (!nama) {
+    showToast('⚠ Nama petugas tidak boleh kosong!', true);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Menyimpan...';
+  
+  const data = {
+    nama: nama,
     jabatan: document.getElementById('mp_jabatan').value,
-    badge:   document.getElementById('mp_badge').value.trim(),
-    urutan:  Number(document.getElementById('mp_urutan').value)||1,
+    badge: document.getElementById('mp_badge').value.trim(),
+    urutan: Number(document.getElementById('mp_urutan').value) || 1,
     inisial: document.getElementById('mp_inisial').value.trim().toUpperCase(),
-    deskripsi:document.getElementById('mp_deskripsi').value.trim(),
-    foto:    document.getElementById('mp_foto').value.trim(),
-    updatedAt:serverTimestamp(),
+    deskripsi: document.getElementById('mp_deskripsi').value.trim(),
+    foto: document.getElementById('mp_foto').value.trim(),
+    updatedAt: serverTimestamp()
   };
-  try{
-    if(id){ await updateDoc(doc(db,'petugas',id),data); }
-    else   { await addDoc(collection(db,'petugas'),{...data,createdAt:serverTimestamp()}); }
+
+  try {
+    if (id) {
+      // Jika ada ID, berarti sedang Edit
+      await updateDoc(doc(db, 'petugas', id), data);
+      showToast('✅ Data petugas berhasil diperbarui!');
+    } else {
+      // Jika tidak ada ID, berarti sedang Tambah Baru
+      await addDoc(collection(db, 'petugas'), {
+        ...data,
+        createdAt: serverTimestamp()
+      });
+      showToast('✅ Petugas baru berhasil ditambahkan!');
+    }
+    
     closeModal('petugas');
-    showToast('✅ Data petugas berhasil disimpan!');
-    // reset form
-    ['mp_id','mp_nama','mp_badge','mp_inisial','mp_deskripsi','mp_foto'].forEach(f=>document.getElementById(f).value='');
-    document.getElementById('mPetugasTitle').textContent='👤 Tambah Petugas';
-    document.getElementById('mp_preview').innerHTML='';
-    loadPetugasTable();
-  }catch(e){showToast('❌ Gagal: '+e.message,true);}
-  finally{btn.disabled=false;btn.textContent='Simpan';}
+    loadPetugasTable(); // Refresh tabel setelah simpan
+    loadDashboard();    // Update angka statistik di dashboard
+  } catch (e) {
+    console.error("Gagal simpan:", e);
+    showToast('❌ Gagal menyimpan: ' + e.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Simpan';
+  }
 };
 
 window.delPetugas = async function(id,nama){
