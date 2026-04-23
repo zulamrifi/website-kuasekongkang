@@ -1,1566 +1,1258 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel – KUA Kec. Sekongkang</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --green-dark:  #1a3a2a;
-      --green-main:  #2d6a4f;
-      --green-mid:   #40916c;
-      --green-light: #74c69d;
-      --green-pale:  #d8f3dc;
-      --gold:        #c9a84c;
-      --gold-light:  #f0d080;
-      --cream:       #faf8f0;
-      --white:       #ffffff;
-      --bg:          #f0f4f1;
-      --sidebar-w:   260px;
-      --red:         #e53e3e;
-      --blue:        #3182ce;
-      --shadow:      0 2px 12px rgba(0,0,0,.07);
-      --radius:      12px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background: var(--bg); color: #2d3748;
-      display: flex; min-height: 100vh; overflow-x: hidden;
-    }
-
-    /* ===== SIDEBAR ===== */
-    .sidebar {
-      width: var(--sidebar-w); flex-shrink: 0;
-      background: var(--green-dark);
-      display: flex; flex-direction: column;
-      position: fixed; left: 0; top: 0; bottom: 0;
-      z-index: 200; overflow-y: auto;
-      transition: transform .3s;
-    }
-
-    .sidebar-header {
-      padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-
-    .sidebar-logo {
-      display: flex; align-items: center; gap: 12px;
-    }
-
-    .logo-circle {
-      width: 42px; height: 42px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 14px; color: var(--green-dark);
-      flex-shrink: 0;
-    }
-
-    .logo-text { line-height: 1.3; }
-    .logo-text span:first-child { display: block; color: white; font-weight: 700; font-size: 14px; }
-    .logo-text span:last-child { display: block; color: rgba(255,255,255,.5); font-size: 11px; }
-
-    .sidebar-admin {
-      margin: 16px 20px 0;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 10px; padding: 12px;
-      display: flex; align-items: center; gap: 10px;
-    }
-
-    .admin-avatar {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: var(--green-mid); display: flex; align-items: center;
-      justify-content: center; color: white; font-weight: 700;
-    }
-
-    .admin-info span { display: block; }
-    .admin-info .a-name { color: white; font-size: 13px; font-weight: 600; }
-    .admin-info .a-role { color: rgba(255,255,255,.4); font-size: 11px; }
-
-    .sidebar-nav { flex: 1; padding: 16px 12px; }
-
-    .nav-section-label {
-      font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-      color: rgba(255,255,255,.3); padding: 0 10px; margin: 16px 0 6px;
-    }
-
-    .nav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 11px 12px; border-radius: 10px;
-      color: rgba(255,255,255,.65); text-decoration: none; font-size: 13.5px;
-      transition: all .2s; cursor: pointer; position: relative;
-    }
-
-    .nav-item:hover { background: rgba(255,255,255,.07); color: white; }
-
-    .nav-item.active {
-      background: linear-gradient(135deg, var(--green-main), var(--green-mid));
-      color: white;
-      box-shadow: 0 4px 15px rgba(45,106,79,.4);
-    }
-
-    .nav-item .nav-icon { font-size: 17px; width: 22px; text-align: center; }
-
-    .nav-badge {
-      margin-left: auto; background: var(--gold);
-      color: var(--green-dark); font-size: 10px; font-weight: 800;
-      padding: 2px 7px; border-radius: 100px;
-    }
-
-    .sidebar-footer {
-      padding: 16px 12px; border-top: 1px solid rgba(255,255,255,.08);
-    }
-
-    /* ===== MAIN ===== */
-    .main {
-      margin-left: var(--sidebar-w); flex: 1;
-      display: flex; flex-direction: column; min-height: 100vh;
-    }
-
-    /* ===== TOP BAR ===== */
-    .topbar {
-      background: white; border-bottom: 1px solid #e2e8f0;
-      padding: 0 28px; height: 64px;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 1px 8px rgba(0,0,0,.05);
-    }
-
-    .topbar-left { display: flex; align-items: center; gap: 12px; }
-
-    .topbar-title { font-size: 16px; font-weight: 700; color: var(--green-dark); }
-    .topbar-subtitle { font-size: 12px; color: #718096; }
-
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-
-    .topbar-btn {
-      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
-      cursor: pointer; border: none; font-family: 'Tajawal', sans-serif;
-      transition: all .2s; display: flex; align-items: center; gap: 6px;
-    }
-
-    .btn-save { background: var(--green-main); color: white; }
-    .btn-save:hover { background: var(--green-dark); }
-
-    .btn-preview {
-      background: #edf2f7; color: #4a5568; text-decoration: none;
-    }
-
-    .btn-preview:hover { background: #e2e8f0; }
-
-    .notif-bell {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: #f7fafc; border: 1px solid #e2e8f0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; cursor: pointer; position: relative;
-    }
-
-    .notif-dot {
-      position: absolute; top: 6px; right: 6px;
-      width: 8px; height: 8px; border-radius: 50%; background: var(--red);
-      border: 2px solid white;
-    }
-
-    /* ===== CONTENT ===== */
-    .content { padding: 28px; flex: 1; }
-
-    /* ===== PANELS ===== */
-    .panel { display: none; }
-    .panel.active { display: block; }
-
-    /* ===== DASHBOARD ===== */
-    .stats-row {
-      display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin-bottom: 28px;
-    }
-
-    .stat-widget {
-      background: white; border-radius: var(--radius); padding: 22px;
-      box-shadow: var(--shadow);
-      display: flex; align-items: center; gap: 16px;
-    }
-
-    .sw-icon {
-      width: 52px; height: 52px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center; font-size: 24px;
-      flex-shrink: 0;
-    }
-
-    .sw-icon.green { background: var(--green-pale); }
-    .sw-icon.gold  { background: #fef3c7; }
-    .sw-icon.blue  { background: #ebf8ff; }
-    .sw-icon.red   { background: #fff5f5; }
-
-    .sw-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--green-dark); }
-    .sw-lbl { font-size: 12px; color: #718096; margin-top: 2px; }
-
-    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-    .card {
-      background: white; border-radius: var(--radius);
-      box-shadow: var(--shadow); overflow: hidden;
-    }
-
-    .card-header {
-      padding: 18px 22px; border-bottom: 1px solid #f0f4f1;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-
-    .card-header h3 { font-size: 15px; font-weight: 700; color: var(--green-dark); }
-    .card-body { padding: 20px 22px; }
-
-    .activity-list { display: flex; flex-direction: column; gap: 14px; }
-
-    .activity-item {
-      display: flex; gap: 12px; align-items: flex-start;
-      padding-bottom: 14px; border-bottom: 1px solid #f7f8f9;
-    }
-
-    .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
-
-    .activity-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green-main); margin-top: 6px; flex-shrink: 0;
-    }
-
-    .activity-text { font-size: 13.5px; color: #4a5568; line-height: 1.5; }
-    .activity-time { font-size: 11px; color: #a0aec0; margin-top: 2px; }
-
-    /* ===== FORM SECTIONS ===== */
-    .form-section {
-      background: white; border-radius: var(--radius);
-      box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden;
-    }
-
-    .fs-header {
-      padding: 18px 24px; background: var(--green-dark);
-      display: flex; align-items: center; gap: 12px; cursor: pointer;
-      justify-content: space-between;
-    }
-
-    .fs-header-left { display: flex; align-items: center; gap: 12px; }
-
-    .fs-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: rgba(255,255,255,.12);
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
-    }
-
-    .fs-title { color: white; font-weight: 700; font-size: 15px; }
-    .fs-subtitle { color: rgba(255,255,255,.55); font-size: 12px; }
-
-    .fs-toggle { color: rgba(255,255,255,.7); font-size: 18px; transition: transform .3s; }
-    .fs-toggle.open { transform: rotate(180deg); }
-
-    .fs-body { padding: 24px; display: none; }
-    .fs-body.open { display: block; }
-
-    /* ===== FORM CONTROLS ===== */
-    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 18px; }
-    .frow.single { grid-template-columns: 1fr; }
-    .frow.three { grid-template-columns: 1fr 1fr 1fr; }
-
-    .fgroup { display: flex; flex-direction: column; gap: 6px; }
-
-    .fgroup label {
-      font-size: 13px; font-weight: 600; color: #4a5568;
-    }
-
-    .fgroup input, .fgroup select, .fgroup textarea {
-      border: 1.5px solid #e2e8f0; border-radius: 8px;
-      padding: 10px 14px; font-size: 14px;
-      font-family: 'Tajawal', sans-serif; color: #2d3748;
-      outline: none; transition: border .2s; background: white;
-    }
-
-    .fgroup input:focus, .fgroup select:focus, .fgroup textarea:focus {
-      border-color: var(--green-main);
-      box-shadow: 0 0 0 3px rgba(45,106,79,.1);
-    }
-
-    .fgroup textarea { resize: vertical; min-height: 80px; }
-
-    .fgroup .hint { font-size: 11.5px; color: #a0aec0; }
-
-    /* ===== PHOTO UPLOAD ===== */
-    .photo-upload {
-      border: 2px dashed #e2e8f0; border-radius: 12px;
-      padding: 28px; text-align: center; cursor: pointer;
-      transition: all .2s; background: #fafafa;
-    }
-
-    .photo-upload:hover { border-color: var(--green-main); background: var(--green-pale); }
-    .photo-upload .pu-icon { font-size: 36px; margin-bottom: 10px; }
-    .photo-upload p { font-size: 13px; color: #718096; }
-    .photo-upload strong { color: var(--green-main); }
-
-    /* ===== PETUGAS TABLE ===== */
-    .table-wrap { overflow-x: auto; }
-
-    table { width: 100%; border-collapse: collapse; }
-    thead { background: #f7fafc; }
-    th { padding: 12px 16px; font-size: 12px; font-weight: 700; text-align: left; color: #718096; text-transform: uppercase; letter-spacing: .05em; }
-    td { padding: 14px 16px; font-size: 13.5px; color: #4a5568; border-bottom: 1px solid #f0f4f1; }
-    tr:hover td { background: #fafcfb; }
-
-    .petugas-row-avatar {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: var(--green-pale); display: flex; align-items: center;
-      justify-content: center; font-weight: 700; color: var(--green-dark);
-      font-size: 14px;
-    }
-
-    .badge {
-      padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700;
-    }
-
-    .badge-green { background: var(--green-pale); color: var(--green-dark); }
-    .badge-gold  { background: #fef3c7; color: #92400e; }
-    .badge-blue  { background: #ebf8ff; color: #2c5282; }
-
-    .table-actions { display: flex; gap: 8px; }
-
-    .btn-edit, .btn-del, .btn-add {
-      padding: 6px 12px; border-radius: 7px; font-size: 12px; font-weight: 600;
-      cursor: pointer; border: none; font-family: 'Tajawal', sans-serif; transition: all .2s;
-    }
-
-    .btn-edit { background: #ebf8ff; color: #2b6cb0; }
-    .btn-edit:hover { background: #bee3f8; }
-    .btn-del  { background: #fff5f5; color: #c53030; }
-    .btn-del:hover { background: #fed7d7; }
-    .btn-add  { background: var(--green-main); color: white; padding: 9px 18px; }
-    .btn-add:hover { background: var(--green-dark); }
-
-    /* ===== MATERI LIST ===== */
-    .materi-list { display: flex; flex-direction: column; gap: 14px; }
-
-    .materi-item {
-      display: flex; align-items: center; gap: 16px;
-      background: #fafafa; border: 1px solid #e8f0e9;
-      border-radius: 12px; padding: 16px; transition: border-color .2s;
-    }
-
-    .materi-item:hover { border-color: var(--green-main); }
-
-    .materi-item-icon {
-      width: 48px; height: 48px; border-radius: 12px;
-      background: var(--green-pale); display: flex; align-items: center;
-      justify-content: center; font-size: 24px; flex-shrink: 0;
-    }
-
-    .materi-item-icon.video-icon { background: #fff5f5; }
-
-    .materi-item-info { flex: 1; }
-    .materi-item-info h4 { font-size: 14px; font-weight: 700; color: var(--green-dark); }
-    .materi-item-info .link-preview { font-size: 12px; color: #a0aec0; margin-top: 3px; word-break: break-all; }
-
-    .materi-item-actions { display: flex; gap: 8px; flex-shrink: 0; }
-
-    /* ===== STATISTIK INPUT ===== */
-    .stat-input-grid {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 24px;
-    }
-
-    .stat-input-card {
-      background: #f7fafc; border-radius: 12px; padding: 18px;
-      border: 1.5px solid #e2e8f0;
-    }
-
-    .stat-input-card label {
-      font-size: 12px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .05em; color: #718096; display: block; margin-bottom: 8px;
-    }
-
-    .stat-input-card input {
-      width: 100%; font-size: 24px; font-weight: 700; font-family: 'Playfair Display', serif;
-      color: var(--green-dark); border: none; background: transparent; outline: none;
-    }
-
-    /* ===== MONTH CHART DATA ===== */
-    .month-data-grid {
-      display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
-    }
-
-    .month-input {
-      background: #f7fafc; border-radius: 10px; padding: 14px;
-      border: 1.5px solid #e2e8f0;
-    }
-
-    .month-input label { font-size: 11px; font-weight: 700; color: #718096; display: block; margin-bottom: 6px; }
-    .month-input input { width: 100%; border: none; background: transparent; font-size: 18px; font-weight: 700; color: var(--green-dark); outline: none; font-family: 'Playfair Display', serif; }
-
-    /* ===== ULASAN ===== */
-    .ulasan-admin-list { display: flex; flex-direction: column; gap: 12px; }
-
-    .ulasan-admin-item {
-      background: #fafafa; border: 1px solid #e8f0e9; border-radius: 12px; padding: 16px;
-      display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center;
-    }
-
-    .ulasan-admin-name { font-weight: 700; font-size: 14px; color: var(--green-dark); }
-    .ulasan-admin-text { font-size: 13px; color: #718096; margin-top: 4px; line-height: 1.5; }
-    .ulasan-admin-rating { color: var(--gold); font-size: 14px; margin-top: 4px; }
-
-    /* ===== ADD MODAL ===== */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
-      align-items: center; justify-content: center;
-    }
-
-    .modal-overlay.open { display: flex; }
-
-    .modal-box {
-      background: white; border-radius: 16px; padding: 32px;
-      width: min(95vw, 520px); max-height: 90vh; overflow-y: auto;
-    }
-
-    .modal-box h3 { font-size: 18px; font-weight: 700; color: var(--green-dark); margin-bottom: 20px; }
-
-    .modal-footer { display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end; }
-
-    .btn-cancel {
-      padding: 10px 20px; border-radius: 8px; background: #f7fafc;
-      color: #4a5568; border: none; cursor: pointer; font-family: 'Tajawal', sans-serif;
-      font-size: 14px; font-weight: 600; transition: all .2s;
-    }
-
-    .btn-cancel:hover { background: #e2e8f0; }
-
-    .btn-confirm {
-      padding: 10px 24px; border-radius: 8px; background: var(--green-main);
-      color: white; border: none; cursor: pointer; font-family: 'Tajawal', sans-serif;
-      font-size: 14px; font-weight: 700; transition: all .2s;
-    }
-
-    .btn-confirm:hover { background: var(--green-dark); }
-
-    /* ===== TOAST ===== */
-    .toast {
-      position: fixed; top: 80px; right: 24px; z-index: 9998;
-      background: var(--green-dark); color: white;
-      padding: 14px 20px; border-radius: 12px; font-size: 14px;
-      box-shadow: 0 8px 30px rgba(0,0,0,.2); display: none;
-      align-items: center; gap: 10px;
-      animation: slideIn .3s ease;
-    }
-
-    .toast.show { display: flex; }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    /* ===== RESPONSIVE ===== */
-    .hamburger-admin {
-      display: none; background: none; border: none;
-      cursor: pointer; padding: 4px; flex-direction: column; gap: 5px;
-    }
-
-    .hamburger-admin span { display: block; width: 24px; height: 2px; background: var(--green-dark); border-radius: 2px; }
-
-    @media (max-width: 1024px) {
-      .stats-row { grid-template-columns: repeat(2,1fr); }
-      .dashboard-grid { grid-template-columns: 1fr; }
-      .frow.three { grid-template-columns: 1fr 1fr; }
-      .stat-input-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .main { margin-left: 0; }
-      .hamburger-admin { display: flex; }
-      .frow { grid-template-columns: 1fr; }
-      .frow.three { grid-template-columns: 1fr; }
-      .month-data-grid { grid-template-columns: repeat(3,1fr); }
-      .stat-input-grid { grid-template-columns: 1fr 1fr; }
-      .content { padding: 16px; }
-    }
-
-    @media (max-width: 480px) {
-      .stats-row { grid-template-columns: 1fr 1fr; }
-      .month-data-grid { grid-template-columns: repeat(2,1fr); }
-    }
-  </style>
+  <title>Admin Panel — KUA Kec. Sekongkang</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gd:#1a3a2a;--gm:#2d6a4f;--gl:#40916c;--glt:#74c69d;--gp:#d8f3dc;
+  --gold:#c9a84c;--gld:#f0d080;--cream:#faf8f0;--bg:#f0f4f1;
+  --sw:260px;--red:#e53e3e;--blue:#3182ce;
+  --sh:0 2px 12px rgba(0,0,0,.07);--r:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:#2d3748;display:flex;min-height:100vh;overflow-x:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--gd);display:flex;flex-direction:column;
+  position:fixed;left:0;top:0;bottom:0;z-index:200;overflow-y:auto;transition:transform .3s;}
+.sb-header{padding:22px 18px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-logo{display:flex;align-items:center;gap:10px;}
+.logo-c{width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--gold),var(--gld));
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--gd);flex-shrink:0;}
+.logo-t span:first-child{display:block;color:white;font-weight:700;font-size:13px;}
+.logo-t span:last-child{display:block;color:rgba(255,255,255,.45);font-size:10.5px;}
+.sb-admin{margin:14px 16px 0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:11px;display:flex;align-items:center;gap:10px;}
+.adm-av{width:34px;height:34px;border-radius:9px;background:var(--gm);display:flex;align-items:center;
+  justify-content:center;color:white;font-weight:700;font-size:14px;}
+.adm-name{color:white;font-size:13px;font-weight:600;display:block;}
+.adm-role{color:rgba(255,255,255,.4);font-size:10.5px;display:block;}
+.sb-nav{flex:1;padding:14px 10px;}
+.nav-sec-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);padding:0 10px;margin:16px 0 5px;}
+.nav-it{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;
+  color:rgba(255,255,255,.62);text-decoration:none;font-size:13.5px;transition:all .2s;cursor:pointer;position:relative;}
+.nav-it:hover{background:rgba(255,255,255,.07);color:white;}
+.nav-it.active{background:linear-gradient(135deg,var(--gm),var(--gl));color:white;box-shadow:0 4px 15px rgba(45,106,79,.4);}
+.nav-ic{font-size:16px;width:20px;text-align:center;}
+.nav-bdg{margin-left:auto;background:var(--gold);color:var(--gd);font-size:10px;font-weight:800;padding:2px 7px;border-radius:100px;}
+.sb-footer{padding:14px 10px;border-top:1px solid rgba(255,255,255,.08);}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── TOPBAR ── */
+.topbar{background:white;border-bottom:1px solid #e2e8f0;padding:0 26px;height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.05);}
+.tb-left{display:flex;align-items:center;gap:12px;}
+.tb-title{font-size:15px;font-weight:700;color:var(--gd);}
+.tb-sub{font-size:12px;color:#718096;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-btn{padding:8px 15px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;
+  font-family:'Tajawal',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-save{background:var(--gm);color:white;}
+.btn-save:hover{background:var(--gd);}
+.btn-save:disabled{opacity:.6;cursor:not-allowed;}
+.btn-prev{background:#edf2f7;color:#4a5568;text-decoration:none;}
+.btn-prev:hover{background:#e2e8f0;}
+.notif-bell{width:34px;height:34px;border-radius:9px;background:#f7fafc;border:1px solid #e2e8f0;
+  display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;position:relative;}
+.notif-dot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid white;}
+.hamburger-adm{display:none;background:none;border:none;cursor:pointer;padding:4px;flex-direction:column;gap:5px;}
+.hamburger-adm span{display:block;width:24px;height:2px;background:var(--gd);border-radius:2px;}
+
+/* ── CONTENT ── */
+.content{padding:26px;flex:1;}
+.panel{display:none;}.panel.active{display:block;}
+
+/* ── DASHBOARD ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px;}
+.sw-card{background:white;border-radius:var(--r);padding:20px;box-shadow:var(--sh);
+  display:flex;align-items:center;gap:14px;}
+.sw-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.sw-icon.green{background:var(--gp)}.sw-icon.gold{background:#fef3c7}.sw-icon.blue{background:#ebf8ff}.sw-icon.red{background:#fff5f5}
+.sw-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gd);}
+.sw-lbl{font-size:11.5px;color:#718096;margin-top:2px;}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.card{background:white;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+.card-hd{padding:16px 20px;border-bottom:1px solid #f0f4f1;display:flex;align-items:center;justify-content:space-between;}
+.card-hd h3{font-size:14px;font-weight:700;color:var(--gd);}
+.card-bd{padding:18px 20px;}
+.activity-list{display:flex;flex-direction:column;gap:12px;}
+.act-item{display:flex;gap:10px;align-items:flex-start;padding-bottom:12px;border-bottom:1px solid #f7f8f9;}
+.act-item:last-child{border:none;padding:0;}
+.act-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.act-txt{font-size:13px;color:#4a5568;line-height:1.5;}
+.act-time{font-size:11px;color:#a0aec0;margin-top:2px;}
+
+/* ── FORM SECTIONS ── */
+.fs{background:white;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:18px;overflow:hidden;}
+.fs-hd{padding:16px 22px;background:var(--gd);display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.fs-hd-l{display:flex;align-items:center;gap:11px;}
+.fs-ic{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;font-size:17px;}
+.fs-title{color:white;font-weight:700;font-size:14px;}
+.fs-sub{color:rgba(255,255,255,.5);font-size:11.5px;}
+.fs-tgl{color:rgba(255,255,255,.6);font-size:16px;transition:transform .3s;}
+.fs-tgl.open{transform:rotate(180deg);}
+.fs-bd{padding:22px;display:none;}.fs-bd.open{display:block;}
+
+/* ── FORM CONTROLS ── */
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:16px;}
+.frow.s1{grid-template-columns:1fr}
+.frow.s3{grid-template-columns:1fr 1fr 1fr}
+.fgrp{display:flex;flex-direction:column;gap:5px;}
+.fgrp label{font-size:12.5px;font-weight:600;color:#4a5568;}
+.fgrp input,.fgrp select,.fgrp textarea{border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 13px;
+  font-size:13.5px;font-family:'Tajawal',sans-serif;color:#2d3748;
+  outline:none;transition:border .2s;background:white;width:100%;}
+.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{border-color:var(--gm);box-shadow:0 0 0 3px rgba(45,106,79,.1);}
+.fgrp textarea{resize:vertical;min-height:80px;}
+.fgrp .hint{font-size:11px;color:#a0aec0;}
+.photo-upload{border:2px dashed #e2e8f0;border-radius:10px;padding:24px;
+  text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;position:relative;}
+.photo-upload:hover{border-color:var(--gm);background:var(--gp);}
+.photo-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.photo-upload .pu-icon{font-size:32px;margin-bottom:8px;}
+.photo-upload p{font-size:12.5px;color:#718096;}
+.photo-upload strong{color:var(--gm);}
+.photo-preview{width:80px;height:80px;border-radius:12px;object-fit:cover;margin:0 auto 8px;display:none;}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead{background:#f7fafc;}
+th{padding:11px 15px;font-size:11.5px;font-weight:700;text-align:left;color:#718096;text-transform:uppercase;letter-spacing:.05em;}
+td{padding:13px 15px;font-size:13px;color:#4a5568;border-bottom:1px solid #f0f4f1;}
+tr:hover td{background:#fafcfb;}
+.row-av{width:34px;height:34px;border-radius:9px;background:var(--gp);display:flex;align-items:center;
+  justify-content:center;font-weight:700;color:var(--gd);font-size:13px;}
+.row-av img{width:100%;height:100%;object-fit:cover;border-radius:9px;}
+.badge{padding:3px 9px;border-radius:100px;font-size:11px;font-weight:700;}
+.bg-green{background:var(--gp);color:var(--gd)}.bg-gold{background:#fef3c7;color:#92400e}
+.bg-blue{background:#ebf8ff;color:#2c5282}.bg-red{background:#fff5f5;color:#c53030}
+.tbl-acts{display:flex;gap:6px;}
+.btn-e,.btn-d,.btn-add,.btn-ok{padding:6px 11px;border-radius:7px;font-size:12px;font-weight:600;
+  cursor:pointer;border:none;font-family:'Tajawal',sans-serif;transition:all .2s;}
+.btn-e{background:#ebf8ff;color:#2b6cb0}.btn-e:hover{background:#bee3f8}
+.btn-d{background:#fff5f5;color:#c53030}.btn-d:hover{background:#fed7d7}
+.btn-ok{background:var(--gp);color:var(--gd)}.btn-ok:hover{background:var(--glt)}
+.btn-add{background:var(--gm);color:white;padding:9px 17px;font-size:13px;}
+.btn-add:hover{background:var(--gd);}
+
+/* ── MATERI LIST ── */
+.materi-list{display:flex;flex-direction:column;gap:13px;}
+.mat-item{display:flex;align-items:center;gap:14px;background:#fafafa;
+  border:1px solid #e8f0e9;border-radius:11px;padding:14px;transition:border-color .2s;}
+.mat-item:hover{border-color:var(--gm);}
+.mat-ic{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.mat-ic.pdf{background:var(--gp)}.mat-ic.vid{background:#fff5f5;}
+.mat-info{flex:1;}
+.mat-info h4{font-size:13.5px;font-weight:700;color:var(--gd);}
+.mat-link{font-size:11.5px;color:#a0aec0;margin-top:3px;word-break:break-all;}
+.mat-acts{display:flex;gap:7px;flex-shrink:0;align-items:center;}
+
+/* ── STAT INPUTS ── */
+.stat-ig{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.stat-ic{background:#f7fafc;border-radius:11px;padding:16px;border:1.5px solid #e2e8f0;}
+.stat-ic label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#718096;display:block;margin-bottom:7px;}
+.stat-ic input{width:100%;font-size:22px;font-weight:700;font-family:'Playfair Display',serif;
+  color:var(--gd);border:none;background:transparent;outline:none;}
+.month-ig{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;}
+.month-ic{background:#f7fafc;border-radius:9px;padding:12px;border:1.5px solid #e2e8f0;}
+.month-ic label{font-size:10.5px;font-weight:700;color:#718096;display:block;margin-bottom:5px;}
+.month-ic input{width:100%;border:none;background:transparent;font-size:17px;font-weight:700;color:var(--gd);outline:none;font-family:'Playfair Display',serif;}
+
+/* ── ULASAN ITEMS ── */
+.ul-list{display:flex;flex-direction:column;gap:11px;}
+.ul-item{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+  background:#fafafa;border:1px solid #e8f0e9;border-radius:11px;padding:14px;}
+.ul-name{font-weight:700;font-size:14px;color:var(--gd);}
+.ul-rating{color:var(--gold);font-size:13px;margin-top:3px;}
+.ul-txt{font-size:12.5px;color:#718096;margin-top:4px;line-height:1.5;}
+
+/* ── KONSULTASI ── */
+.konsul-item{background:#fafafa;border:1px solid #e8f0e9;border-radius:11px;padding:16px;margin-bottom:12px;cursor:pointer;transition:border-color .2s;}
+.konsul-item:hover{border-color:var(--gm);}
+.konsul-item.unread{border-left:3px solid var(--gold);}
+.konsul-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.konsul-name{font-weight:700;font-size:14px;color:var(--gd);}
+.konsul-time{font-size:11.5px;color:#a0aec0;}
+.konsul-topik{font-size:12px;color:var(--gm);font-weight:600;margin-bottom:4px;}
+.konsul-msg{font-size:13px;color:#718096;line-height:1.5;}
+.konsul-acts{display:flex;gap:8px;margin-top:10px;}
+
+/* ── MODAL ── */
+.modal-ov{display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:16px;}
+.modal-ov.open{display:flex;}
+.modal-bx{background:white;border-radius:16px;padding:30px;width:min(95vw,520px);max-height:90vh;overflow-y:auto;}
+.modal-bx h3{font-size:17px;font-weight:700;color:var(--gd);margin-bottom:20px;}
+.modal-ft{display:flex;gap:10px;margin-top:22px;justify-content:flex-end;}
+.btn-cancel{padding:9px 18px;border-radius:8px;background:#f7fafc;color:#4a5568;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13.5px;font-weight:600;}
+.btn-cancel:hover{background:#e2e8f0;}
+.btn-confirm{padding:9px 22px;border-radius:8px;background:var(--gm);color:white;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13.5px;font-weight:700;}
+.btn-confirm:hover{background:var(--gd);}
+.btn-confirm:disabled{opacity:.6;cursor:not-allowed;}
+
+/* ── SETTING AKUN ── */
+.setting-card{background:white;border-radius:var(--r);box-shadow:var(--sh);padding:28px;max-width:520px;}
+.setting-card h3{font-size:17px;font-weight:700;color:var(--gd);margin-bottom:6px;}
+.setting-card .sub{font-size:13px;color:#718096;margin-bottom:24px;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:44px;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;font-size:17px;color:#a0aec0;}
+.security-note{background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:12px 16px;
+  font-size:12.5px;color:#92400e;margin-top:16px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:78px;right:22px;z-index:9998;background:var(--gd);color:white;
+  padding:13px 18px;border-radius:11px;font-size:13.5px;
+  box-shadow:0 8px 30px rgba(0,0,0,.2);display:none;align-items:center;gap:9px;}
+.toast.show{display:flex;animation:slideIn .3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(15px)}to{opacity:1;transform:none}}
+.toast.err{background:var(--red);}
+
+/* ── LOADING OVERLAY ── */
+.loading-ov{position:fixed;inset:0;z-index:99999;background:rgba(26,58,42,.7);
+  display:none;align-items:center;justify-content:center;}
+.loading-ov.show{display:flex;}
+.spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.3);border-top-color:var(--gld);
+  border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .dash-grid{grid-template-columns:1fr;}
+  .stat-ig{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .hamburger-adm{display:flex;}
+  .frow{grid-template-columns:1fr;}
+  .frow.s3{grid-template-columns:1fr;}
+  .month-ig{grid-template-columns:repeat(3,1fr);}
+  .content{padding:16px;}
+}
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .month-ig{grid-template-columns:repeat(2,1fr);}
+  .stat-ig{grid-template-columns:1fr;}
+}
+</style>
 </head>
 <body>
 
-<!-- SIDEBAR OVERLAY (mobile) -->
-<div id="sidebarOverlay" style="display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.4);" onclick="closeSidebar()"></div>
+<div id="loadingOv" class="loading-ov"><div class="spinner"></div></div>
+<div id="sidebarOv" style="display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.4);" onclick="closeSb()"></div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <div class="sidebar-logo">
-      <div class="logo-circle">KUA</div>
-      <div class="logo-text">
-        <span>Admin Panel</span>
-        <span>KUA Kec. Sekongkang</span>
-      </div>
+  <div class="sb-header">
+    <div class="sb-logo">
+      <div class="logo-c">KUA</div>
+      <div class="logo-t"><span>Admin Panel</span><span>KUA Kec. Sekongkang</span></div>
     </div>
-
-    <div class="sidebar-admin">
-      <div class="admin-avatar">A</div>
-      <div class="admin-info">
-        <span class="a-name">Administrator</span>
-        <span class="a-role">Super Admin</span>
-      </div>
+    <div class="sb-admin">
+      <div class="adm-av" id="sbAv">A</div>
+      <div><span class="adm-name" id="sbName">Administrator</span><span class="adm-role" id="sbEmail">—</span></div>
     </div>
   </div>
-
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Utama</div>
-    <div class="nav-item active" onclick="showPanel('dashboard', this)">
-      <span class="nav-icon">📊</span> Dashboard
-    </div>
-
-    <div class="nav-section-label">Konten Website</div>
-    <div class="nav-item" onclick="showPanel('hero', this)">
-      <span class="nav-icon">🏠</span> Header & Hero
-    </div>
-    <div class="nav-item" onclick="showPanel('pengumuman', this)">
-      <span class="nav-icon">📢</span> Pengumuman
-    </div>
-    <div class="nav-item" onclick="showPanel('petugas', this)">
-      <span class="nav-icon">👥</span> Petugas KUA
-    </div>
-    <div class="nav-item" onclick="showPanel('statistik', this)">
-      <span class="nav-icon">📈</span> Statistik
-    </div>
-    <div class="nav-item" onclick="showPanel('ulasan', this)">
-      <span class="nav-icon">⭐</span> Ulasan
-      <span class="nav-badge">3</span>
-    </div>
-    <div class="nav-item" onclick="showPanel('materi', this)">
-      <span class="nav-icon">📚</span> Materi Bimwin
-    </div>
-    <div class="nav-item" onclick="showPanel('konsultasi', this)">
-      <span class="nav-icon">💬</span> Konsultasi Masuk
-      <span class="nav-badge">5</span>
-    </div>
-    <div class="nav-item" onclick="showPanel('info', this)">
-      <span class="nav-icon">📍</span> Info Kantor
-    </div>
-    <div class="nav-item" onclick="showPanel('footer', this)">
-      <span class="nav-icon">📄</span> Footer
-    </div>
-
-    <div class="nav-section-label">Lainnya</div>
-    <div class="nav-item" onclick="showPanel('seo', this)">
-      <span class="nav-icon">🔍</span> SEO & Meta
-    </div>
-    <div class="nav-item" onclick="window.open('index.html','_blank')">
-      <span class="nav-icon">🌐</span> Lihat Website
-    </div>
+  <nav class="sb-nav">
+    <div class="nav-sec-lbl">Utama</div>
+    <div class="nav-it active" onclick="showPanel('dashboard',this)"><span class="nav-ic">📊</span>Dashboard</div>
+    <div class="nav-sec-lbl">Konten Website</div>
+    <div class="nav-it" onclick="showPanel('hero',this)"><span class="nav-ic">🏠</span>Header & Hero</div>
+    <div class="nav-it" onclick="showPanel('pengumuman',this)"><span class="nav-ic">📢</span>Pengumuman</div>
+    <div class="nav-it" onclick="showPanel('petugas',this)"><span class="nav-ic">👥</span>Petugas KUA</div>
+    <div class="nav-it" onclick="showPanel('statistik',this)"><span class="nav-ic">📈</span>Statistik</div>
+    <div class="nav-it" onclick="showPanel('ulasan',this)"><span class="nav-ic">⭐</span>Ulasan<span class="nav-bdg" id="bdgUlasan"></span></div>
+    <div class="nav-it" onclick="showPanel('materi',this)"><span class="nav-ic">📚</span>Materi Bimwin</div>
+    <div class="nav-it" onclick="showPanel('konsultasi',this)"><span class="nav-ic">💬</span>Konsultasi<span class="nav-bdg" id="bdgKonsul"></span></div>
+    <div class="nav-it" onclick="showPanel('infokantor',this)"><span class="nav-ic">📍</span>Info Kantor</div>
+    <div class="nav-it" onclick="showPanel('footer',this)"><span class="nav-ic">📄</span>Footer & Sosmed</div>
+    <div class="nav-sec-lbl">Akun</div>
+    <div class="nav-it" onclick="showPanel('akun',this)"><span class="nav-ic">🔐</span>Setting Akun</div>
+    <div class="nav-it" onclick="showPanel('seo',this)"><span class="nav-ic">🔍</span>SEO & Meta</div>
   </nav>
-
-  <div class="sidebar-footer">
-    <div class="nav-item" style="color:rgba(255,255,255,.5)">
-      <span class="nav-icon">⚙️</span> Pengaturan
-    </div>
-    <div class="nav-item" style="color:#fc8181">
-      <span class="nav-icon">🚪</span> Keluar
-    </div>
+  <div class="sb-footer">
+    <a href="index.html" target="_blank" class="nav-it"><span class="nav-ic">🌐</span>Lihat Website</a>
+    <div class="nav-it" style="color:#fc8181" onclick="doLogout()"><span class="nav-ic">🚪</span>Keluar</div>
   </div>
 </aside>
 
 <!-- MAIN -->
 <div class="main">
-
-  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="topbar-left">
-      <button class="hamburger-admin" onclick="toggleSidebar()">
-        <span></span><span></span><span></span>
-      </button>
-      <div>
-        <div class="topbar-title" id="topbarTitle">Dashboard</div>
-        <div class="topbar-subtitle" id="topbarSub">Ringkasan aktivitas KUA</div>
-      </div>
+    <div class="tb-left">
+      <button class="hamburger-adm" onclick="toggleSb()"><span></span><span></span><span></span></button>
+      <div><div class="tb-title" id="tbTitle">Dashboard</div><div class="tb-sub" id="tbSub">Ringkasan aktivitas KUA</div></div>
     </div>
-    <div class="topbar-right">
-      <a href="index.html" class="topbar-btn btn-preview" target="_blank">🌐 Preview Website</a>
-      <button class="topbar-btn btn-save" onclick="saveAll()">💾 Simpan Perubahan</button>
-      <div class="notif-bell">🔔<span class="notif-dot"></span></div>
+    <div class="tb-right">
+      <a href="index.html" target="_blank" class="tb-btn btn-prev">🌐 Preview</a>
+      <button class="tb-btn btn-save" id="saveBtn" onclick="saveCurrentPanel()">💾 Simpan</button>
+      <div class="notif-bell">🔔<span class="notif-dot" id="notifDot"></span></div>
     </div>
   </div>
 
-  <!-- CONTENT -->
   <div class="content">
 
-    <!-- ===== DASHBOARD ===== -->
-    <div class="panel active" id="panel-dashboard">
-      <div class="stats-row">
-        <div class="stat-widget">
-          <div class="sw-icon green">💍</div>
-          <div><div class="sw-num">127</div><div class="sw-lbl">Nikah Tahun Ini</div></div>
-        </div>
-        <div class="stat-widget">
-          <div class="sw-icon gold">💬</div>
-          <div><div class="sw-num">5</div><div class="sw-lbl">Konsultasi Masuk</div></div>
-        </div>
-        <div class="stat-widget">
-          <div class="sw-icon blue">📚</div>
-          <div><div class="sw-num">6</div><div class="sw-lbl">Materi Aktif</div></div>
-        </div>
-        <div class="stat-widget">
-          <div class="sw-icon red">⭐</div>
-          <div><div class="sw-num">4.9</div><div class="sw-lbl">Rating Website</div></div>
-        </div>
-      </div>
-
-      <div class="dashboard-grid">
-        <div class="card">
-          <div class="card-header">
-            <h3>🕐 Aktivitas Terkini</h3>
-          </div>
-          <div class="card-body">
-            <div class="activity-list">
-              <div class="activity-item">
-                <div class="activity-dot" style="background:var(--green-main)"></div>
-                <div>
-                  <div class="activity-text">Konsultasi baru dari <strong>Ahmad Fauzi</strong> – Prosedur Nikah</div>
-                  <div class="activity-time">5 menit lalu</div>
-                </div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-dot" style="background:#3182ce"></div>
-                <div>
-                  <div class="activity-text">Materi PDF baru ditambahkan: <strong>Hukum Perkawinan Islam</strong></div>
-                  <div class="activity-time">1 jam lalu</div>
-                </div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-dot" style="background:var(--gold)"></div>
-                <div>
-                  <div class="activity-text">Ulasan baru dari <strong>Nurhayati</strong> – ★★★★★</div>
-                  <div class="activity-time">3 jam lalu</div>
-                </div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-dot" style="background:#9f7aea"></div>
-                <div>
-                  <div class="activity-text">Data statistik bulan November diperbarui</div>
-                  <div class="activity-time">Kemarin</div>
-                </div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-dot" style="background:#38a169"></div>
-                <div>
-                  <div class="activity-text">Foto petugas baru diunggah untuk <strong>Kepala KUA</strong></div>
-                  <div class="activity-time">2 hari lalu</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <h3>📋 Panduan Cepat Admin</h3>
-          </div>
-          <div class="card-body">
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;font-size:13.5px;color:#166534">
-                <strong>✅ Cara Edit Header:</strong><br>
-                Klik menu "Header & Hero" → ubah judul, tagline, atau gambar → Simpan.
-              </div>
-              <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;font-size:13.5px;color:#1e40af">
-                <strong>📤 Cara Tambah Materi:</strong><br>
-                Masuk ke menu "Materi Bimwin" → klik Tambah → masukkan judul & link Google Drive atau YouTube.
-              </div>
-              <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px;font-size:13.5px;color:#9a3412">
-                <strong>👥 Cara Edit Petugas:</strong><br>
-                Masuk ke menu "Petugas KUA" → klik ✏ Edit di samping nama petugas → perbarui data & foto.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- ══ DASHBOARD ══ -->
+  <div class="panel active" id="panel-dashboard">
+    <div class="stats-row">
+      <div class="sw-card"><div class="sw-icon green">💍</div><div><div class="sw-num" id="dsh-nikah">—</div><div class="sw-lbl">Nikah Tahun Ini</div></div></div>
+      <div class="sw-card"><div class="sw-icon gold">💬</div><div><div class="sw-num" id="dsh-konsul">—</div><div class="sw-lbl">Konsultasi Masuk</div></div></div>
+      <div class="sw-card"><div class="sw-icon blue">📚</div><div><div class="sw-num" id="dsh-materi">—</div><div class="sw-lbl">Materi Aktif</div></div></div>
+      <div class="sw-card"><div class="sw-icon red">⭐</div><div><div class="sw-num" id="dsh-ulasan">—</div><div class="sw-lbl">Total Ulasan</div></div></div>
     </div>
-
-    <!-- ===== HERO ===== -->
-    <div class="panel" id="panel-hero">
-      <div class="form-section">
-        <div class="fs-header" onclick="toggleSection(this)">
-          <div class="fs-header-left">
-            <div class="fs-icon">🏠</div>
-            <div><div class="fs-title">Header & Hero Section</div><div class="fs-subtitle">Edit teks utama, tagline, dan elemen hero</div></div>
-          </div>
-          <span class="fs-toggle open">▾</span>
-        </div>
-        <div class="fs-body open">
-          <div class="frow">
-            <div class="fgroup">
-              <label>Nama Instansi (Judul Utama)</label>
-              <input type="text" value="KUA Kecamatan Sekongkang" />
-            </div>
-            <div class="fgroup">
-              <label>Sub Judul</label>
-              <input type="text" value="Kabupaten Sumbawa Barat" />
-            </div>
-          </div>
-          <div class="frow single">
-            <div class="fgroup">
-              <label>Ayat / Kalimat Arab (Hero)</label>
-              <input type="text" value="بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ" />
-              <span class="hint">Gunakan tulisan Arab langsung (Unicode)</span>
-            </div>
-          </div>
-          <div class="frow single">
-            <div class="fgroup">
-              <label>Tagline / Deskripsi Hero</label>
-              <textarea>Kantor Urusan Agama Kecamatan Sekongkang, Kabupaten Sumbawa Barat — melayani masyarakat dalam urusan pernikahan, keagamaan, dan pembinaan keluarga sakinah.</textarea>
-            </div>
-          </div>
-          <div class="frow">
-            <div class="fgroup">
-              <label>Teks Tombol Utama</label>
-              <input type="text" value="📋 Konsultasi Sekarang" />
-            </div>
-            <div class="fgroup">
-              <label>Teks Tombol Kedua</label>
-              <input type="text" value="Lihat Layanan ↓" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="fs-header" onclick="toggleSection(this)">
-          <div class="fs-header-left">
-            <div class="fs-icon">🏷</div>
-            <div><div class="fs-title">Statistik Ringkas di Hero</div><div class="fs-subtitle">4 angka yang ditampilkan di kartu hero</div></div>
-          </div>
-          <span class="fs-toggle">▾</span>
-        </div>
-        <div class="fs-body">
-          <div class="frow">
-            <div class="fgroup"><label>Label 1</label><input type="text" value="Total Nikah" /></div>
-            <div class="fgroup"><label>Nilai 1</label><input type="text" value="127" /></div>
-          </div>
-          <div class="frow">
-            <div class="fgroup"><label>Label 2</label><input type="text" value="Kepuasan" /></div>
-            <div class="fgroup"><label>Nilai 2</label><input type="text" value="98%" /></div>
-          </div>
-          <div class="frow">
-            <div class="fgroup"><label>Label 3</label><input type="text" value="Bimwin" /></div>
-            <div class="fgroup"><label>Nilai 3</label><input type="text" value="12" /></div>
-          </div>
-          <div class="frow">
-            <div class="fgroup"><label>Label 4</label><input type="text" value="Rating" /></div>
-            <div class="fgroup"><label>Nilai 4</label><input type="text" value="5★" /></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== PENGUMUMAN ===== -->
-    <div class="panel" id="panel-pengumuman">
-      <div class="form-section">
-        <div class="fs-header" onclick="toggleSection(this)">
-          <div class="fs-header-left">
-            <div class="fs-icon">📢</div>
-            <div><div class="fs-title">Teks Pengumuman Berjalan</div><div class="fs-subtitle">Teks yang berjalan di bagian atas halaman</div></div>
-          </div>
-          <span class="fs-toggle open">▾</span>
-        </div>
-        <div class="fs-body open">
-          <div class="frow single">
-            <div class="fgroup">
-              <label>Teks Pengumuman (pisahkan dengan | untuk multi-pesan)</label>
-              <textarea style="min-height:120px">🌙 Selamat datang di website resmi KUA Kecamatan Sekongkang | 📋 Layanan pendaftaran nikah dapat dilakukan secara online melalui SIMKAH Web | 🕌 Jam operasional: Senin–Jumat, 08.00–16.00 WITA | 📞 Info lebih lanjut hubungi: (0372) XXXXXXX</textarea>
-            </div>
-          </div>
-          <div class="frow">
-            <div class="fgroup">
-              <label>Kecepatan (detik, lebih besar = lebih lambat)</label>
-              <input type="number" value="20" min="10" max="60" />
-            </div>
-            <div class="fgroup">
-              <label>Status</label>
-              <select><option>Tampilkan</option><option>Sembunyikan</option></select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== PETUGAS ===== -->
-    <div class="panel" id="panel-petugas">
-      <div class="card" style="margin-bottom:20px">
-        <div class="card-header">
-          <h3>👥 Daftar Petugas KUA</h3>
-          <button class="btn-add" onclick="openModal('addPetugas')">+ Tambah Petugas</button>
-        </div>
-        <div class="card-body" style="padding:0">
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Foto</th>
-                  <th>Nama</th>
-                  <th>Jabatan</th>
-                  <th>NIP</th>
-                  <th>Status</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="petugasTable">
-                <tr>
-                  <td><div class="petugas-row-avatar">KA</div></td>
-                  <td><strong>[Nama Kepala KUA]</strong></td>
-                  <td>Kepala KUA</td>
-                  <td>19XXXXXXXX</td>
-                  <td><span class="badge badge-green">Aktif</span></td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn-edit" onclick="openModal('editPetugas')">✏ Edit</button>
-                      <button class="btn-del" onclick="confirmDelete('petugas')">🗑</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><div class="petugas-row-avatar">P1</div></td>
-                  <td><strong>[Nama Penghulu]</strong></td>
-                  <td>Penghulu</td>
-                  <td>19XXXXXXXX</td>
-                  <td><span class="badge badge-green">Aktif</span></td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn-edit" onclick="openModal('editPetugas')">✏ Edit</button>
-                      <button class="btn-del" onclick="confirmDelete('petugas')">🗑</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><div class="petugas-row-avatar">P2</div></td>
-                  <td><strong>[Nama Penyuluh]</strong></td>
-                  <td>Penyuluh Agama</td>
-                  <td>19XXXXXXXX</td>
-                  <td><span class="badge badge-gold">Honorer</span></td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn-edit" onclick="openModal('editPetugas')">✏ Edit</button>
-                      <button class="btn-del" onclick="confirmDelete('petugas')">🗑</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><div class="petugas-row-avatar">TU</div></td>
-                  <td><strong>[Nama Staf TU]</strong></td>
-                  <td>Staf Tata Usaha</td>
-                  <td>19XXXXXXXX</td>
-                  <td><span class="badge badge-blue">PPNPN</span></td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn-edit" onclick="openModal('editPetugas')">✏ Edit</button>
-                      <button class="btn-del" onclick="confirmDelete('petugas')">🗑</button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== STATISTIK ===== -->
-    <div class="panel" id="panel-statistik">
-      <div class="form-section">
-        <div class="fs-header" onclick="toggleSection(this)">
-          <div class="fs-header-left">
-            <div class="fs-icon">📊</div>
-            <div><div class="fs-title">Angka Statistik Utama</div><div class="fs-subtitle">4 kartu angka di bagian statistik</div></div>
-          </div>
-          <span class="fs-toggle open">▾</span>
-        </div>
-        <div class="fs-body open">
-          <div class="stat-input-grid">
-            <div class="stat-input-card">
-              <label>Total Nikah (2024)</label>
-              <input type="number" value="127" />
-            </div>
-            <div class="stat-input-card">
-              <label>Rata-rata / Bulan</label>
-              <input type="number" value="11" />
-            </div>
-            <div class="stat-input-card">
-              <label>Rujuk</label>
-              <input type="number" value="3" />
-            </div>
-            <div class="stat-input-card">
-              <label>Peserta Bimwin</label>
-              <input type="number" value="254" />
-            </div>
-            <div class="stat-input-card">
-              <label>Judul Grafik</label>
-              <input type="text" value="Grafik Pernikahan per Bulan (2024)" style="font-size:14px;font-family:'Tajawal',sans-serif;font-weight:600" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="fs-header" onclick="toggleSection(this)">
-          <div class="fs-header-left">
-            <div class="fs-icon">📉</div>
-            <div><div class="fs-title">Data Bulanan – Pernikahan</div><div class="fs-subtitle">Jan s/d Des</div></div>
-          </div>
-          <span class="fs-toggle">▾</span>
-        </div>
-        <div class="fs-body">
-          <div class="month-data-grid">
-            <div class="month-input"><label>Januari</label><input type="number" value="8" /></div>
-            <div class="month-input"><label>Februari</label><input type="number" value="11" /></div>
-            <div class="month-input"><label>Maret</label><input type="number" value="14" /></div>
-            <div class="month-input"><label>April</label><input type="number" value="12" /></div>
-            <div class="month-input"><label>Mei</label><input type="number" value="9" /></div>
-            <div class="month-input"><label>Juni</label><input type="number" value="13" /></div>
-            <div class="month-input"><label>Juli</label><input type="number" value="10" /></div>
-            <div class="month-input"><label>Agustus</label><input type="number" value="12" /></div>
-            <div class="month-input"><label>September</label><input type="number" value="11" /></div>
-            <div class="month-input"><label>Oktober</label><input type="number" value="13" /></div>
-            <div class="month-input"><label>November</label><input type="number" value="7" /></div>
-            <div class="month-input"><label>Desember</label><input type="number" value="7" /></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== ULASAN ===== -->
-    <div class="panel" id="panel-ulasan">
+    <div class="dash-grid">
       <div class="card">
-        <div class="card-header">
-          <h3>⭐ Kelola Ulasan</h3>
-          <button class="btn-add" onclick="openModal('addUlasan')">+ Tambah Ulasan</button>
-        </div>
-        <div class="card-body">
-          <div class="ulasan-admin-list">
-            <div class="ulasan-admin-item">
-              <div>
-                <div class="ulasan-admin-name">Ahmad Fauzi — <span style="font-size:12px;color:#718096">Januari 2024</span></div>
-                <div class="ulasan-admin-rating">★★★★★</div>
-                <div class="ulasan-admin-text">Pelayanan yang sangat baik dan ramah. Proses pendaftaran nikah kami berjalan lancar tanpa hambatan.</div>
-              </div>
-              <div class="table-actions">
-                <button class="btn-edit">✏</button>
-                <button class="btn-del" onclick="confirmDelete('ulasan')">🗑</button>
-              </div>
-            </div>
-            <div class="ulasan-admin-item">
-              <div>
-                <div class="ulasan-admin-name">Nurhayati — <span style="font-size:12px;color:#718096">Maret 2024</span></div>
-                <div class="ulasan-admin-rating">★★★★★</div>
-                <div class="ulasan-admin-text">Alhamdulillah, bimbingan pra nikah yang diberikan sangat bermanfaat untuk persiapan pernikahan kami.</div>
-              </div>
-              <div class="table-actions">
-                <button class="btn-edit">✏</button>
-                <button class="btn-del" onclick="confirmDelete('ulasan')">🗑</button>
-              </div>
-            </div>
-            <div class="ulasan-admin-item">
-              <div>
-                <div class="ulasan-admin-name">Muhammad Rizki — <span style="font-size:12px;color:#718096">Juni 2024</span></div>
-                <div class="ulasan-admin-rating">★★★★☆</div>
-                <div class="ulasan-admin-text">Tempat yang bersih dan nyaman. Petugas profesional dalam melayani. Saya sangat puas.</div>
-              </div>
-              <div class="table-actions">
-                <button class="btn-edit">✏</button>
-                <button class="btn-del" onclick="confirmDelete('ulasan')">🗑</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="card-hd"><h3>🕐 Aktivitas Terkini</h3></div>
+        <div class="card-bd"><div class="activity-list" id="activityList"><div style="color:#a0aec0;font-size:13px">Memuat...</div></div></div>
       </div>
-    </div>
-
-    <!-- ===== MATERI ===== -->
-    <div class="panel" id="panel-materi">
       <div class="card">
-        <div class="card-header">
-          <h3>📚 Kelola Materi Bimwin</h3>
-          <button class="btn-add" onclick="openModal('addMateri')">+ Tambah Materi</button>
-        </div>
-        <div class="card-body">
-          <div class="materi-list" id="materiAdminList">
+        <div class="card-hd"><h3>📋 Konsultasi Terbaru</h3></div>
+        <div class="card-bd" id="dashKonsul"><div style="color:#a0aec0;font-size:13px">Memuat...</div></div>
+      </div>
+    </div>
+  </div>
 
-            <div class="materi-item">
-              <div class="materi-item-icon">📄</div>
-              <div class="materi-item-info">
-                <h4>Modul Bimbingan Pra Nikah</h4>
-                <div class="link-preview">📁 Google Drive: https://drive.google.com/file/d/XXXXX</div>
-              </div>
-              <div class="materi-item-actions">
-                <span class="badge badge-green">PDF</span>
-                <button class="btn-edit">✏</button>
-                <button class="btn-del" onclick="confirmDelete('materi')">🗑</button>
-              </div>
-            </div>
-
-            <div class="materi-item">
-              <div class="materi-item-icon video-icon">▶</div>
-              <div class="materi-item-info">
-                <h4>Prosedur Pendaftaran Nikah</h4>
-                <div class="link-preview">🎬 YouTube: https://youtu.be/XXXXX</div>
-              </div>
-              <div class="materi-item-actions">
-                <span class="badge" style="background:#fff5f5;color:#c53030">Video</span>
-                <button class="btn-edit">✏</button>
-                <button class="btn-del" onclick="confirmDelete('materi')">🗑</button>
-              </div>
-            </div>
-
-            <div class="materi-item">
-              <div class="materi-item-icon">📑</div>
-              <div class="materi-item-info">
-                <h4>Hukum Perkawinan Islam</h4>
-                <div class="link-preview">📁 Google Drive: https://drive.google.com/file/d/XXXXX</div>
-              </div>
-              <div class="materi-item-actions">
-                <span class="badge badge-green">PDF</span>
-                <button class="btn-edit">✏</button>
-                <button class="btn-del" onclick="confirmDelete('materi')">🗑</button>
-              </div>
-            </div>
-
-            <div class="materi-item">
-              <div class="materi-item-icon video-icon">▶</div>
-              <div class="materi-item-info">
-                <h4>Tips Keluarga Sakinah</h4>
-                <div class="link-preview">🎬 YouTube: https://youtu.be/XXXXX</div>
-              </div>
-              <div class="materi-item-actions">
-                <span class="badge" style="background:#fff5f5;color:#c53030">Video</span>
-                <button class="btn-edit">✏</button>
-                <button class="btn-del" onclick="confirmDelete('materi')">🗑</button>
-              </div>
-            </div>
-
-          </div>
+  <!-- ══ HERO ══ -->
+  <div class="panel" id="panel-hero">
+    <div class="fs">
+      <div class="fs-hd" onclick="toggleFs(this)">
+        <div class="fs-hd-l"><div class="fs-ic">🏠</div><div><div class="fs-title">Header & Hero Section</div><div class="fs-sub">Edit teks utama, tagline, tombol</div></div></div>
+        <span class="fs-tgl open">▾</span>
+      </div>
+      <div class="fs-bd open">
+        <div class="frow s1"><div class="fgrp"><label>Judul (nama kecamatan)</label><input id="h_heroTitle" placeholder="Sekongkang"/></div></div>
+        <div class="frow s1"><div class="fgrp"><label>Ayat / Kalimat Arab</label><input id="h_heroArabic" placeholder="بِسْمِ اللهِ..."/><span class="hint">Teks Arab, ditampilkan di atas judul hero</span></div></div>
+        <div class="frow s1"><div class="fgrp"><label>Tagline / Deskripsi Hero</label><textarea id="h_heroSubtitle" rows="3"></textarea></div></div>
+        <div class="frow">
+          <div class="fgrp"><label>Teks Tombol Utama</label><input id="h_heroBtnPrimary" placeholder="📋 Konsultasi Sekarang"/></div>
+          <div class="fgrp"><label>Teks Tombol Kedua</label><input id="h_heroBtnSecond" placeholder="Lihat Layanan ↓"/></div>
         </div>
       </div>
     </div>
+    <div class="fs">
+      <div class="fs-hd" onclick="toggleFs(this)">
+        <div class="fs-hd-l"><div class="fs-ic">🏷</div><div><div class="fs-title">Statistik Ringkas Hero</div><div class="fs-sub">4 angka di kartu hero</div></div></div>
+        <span class="fs-tgl">▾</span>
+      </div>
+      <div class="fs-bd">
+        <div class="frow"><div class="fgrp"><label>Label 1</label><input id="h_hStat1L" placeholder="Total Nikah"/></div><div class="fgrp"><label>Nilai 1</label><input id="h_hStat1" placeholder="127"/></div></div>
+        <div class="frow"><div class="fgrp"><label>Label 2</label><input id="h_hStat2L" placeholder="Kepuasan"/></div><div class="fgrp"><label>Nilai 2</label><input id="h_hStat2" placeholder="98%"/></div></div>
+        <div class="frow"><div class="fgrp"><label>Label 3</label><input id="h_hStat3L" placeholder="Bimwin"/></div><div class="fgrp"><label>Nilai 3</label><input id="h_hStat3" placeholder="12"/></div></div>
+        <div class="frow"><div class="fgrp"><label>Label 4</label><input id="h_hStat4L" placeholder="Rating"/></div><div class="fgrp"><label>Nilai 4</label><input id="h_hStat4" placeholder="5★"/></div></div>
+        <div class="frow s1"><div class="fgrp"><label>Tahun Statistik (di kartu hero)</label><input id="h_heroStatYear" placeholder="2024"/></div></div>
+      </div>
+    </div>
+  </div>
 
-    <!-- ===== KONSULTASI MASUK ===== -->
-    <div class="panel" id="panel-konsultasi">
-      <div class="card">
-        <div class="card-header">
-          <h3>💬 Pesan Konsultasi Masuk</h3>
-          <span class="badge badge-gold">5 Belum Dibaca</span>
-        </div>
-        <div class="card-body" style="padding:0">
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Nama</th><th>Topik</th><th>Pesan</th><th>Waktu</th><th>Status</th><th>Aksi</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Ahmad Fauzi</strong><br><span style="font-size:12px;color:#a0aec0">0812-XXXX-XXXX</span></td>
-                  <td>Prosedur Nikah</td>
-                  <td style="max-width:200px;font-size:13px">Ingin menanyakan prosedur pendaftaran nikah online...</td>
-                  <td style="font-size:12px;color:#a0aec0">5 mnt lalu</td>
-                  <td><span class="badge badge-gold">Baru</span></td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn-edit">👁 Lihat</button>
-                      <button class="btn-del">✓ Selesai</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Siti Rahmah</strong><br><span style="font-size:12px;color:#a0aec0">0813-XXXX-XXXX</span></td>
-                  <td>Bimbingan Keluarga</td>
-                  <td style="max-width:200px;font-size:13px">Membutuhkan konseling keluarga...</td>
-                  <td style="font-size:12px;color:#a0aec0">2 jam lalu</td>
-                  <td><span class="badge badge-blue">Diproses</span></td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn-edit">👁 Lihat</button>
-                      <button class="btn-del">✓ Selesai</button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+  <!-- ══ PENGUMUMAN ══ -->
+  <div class="panel" id="panel-pengumuman">
+    <div class="fs">
+      <div class="fs-hd" onclick="toggleFs(this)">
+        <div class="fs-hd-l"><div class="fs-ic">📢</div><div><div class="fs-title">Teks Pengumuman Berjalan</div><div class="fs-sub">Teks di bagian paling atas halaman</div></div></div>
+        <span class="fs-tgl open">▾</span>
+      </div>
+      <div class="fs-bd open">
+        <div class="frow s1"><div class="fgrp">
+          <label>Teks Pengumuman (pisahkan dengan | untuk multi-pesan)</label>
+          <textarea id="h_pengumuman" rows="4" placeholder="🌙 Selamat datang | 📋 Info layanan..."></textarea>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PETUGAS ══ -->
+  <div class="panel" id="panel-petugas">
+    <div class="card">
+      <div class="card-hd"><h3>👥 Daftar Petugas KUA</h3><button class="btn-add" onclick="openModal('addPetugas')">+ Tambah Petugas</button></div>
+      <div class="card-bd" style="padding:0"><div class="tbl-wrap"><table>
+        <thead><tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Urutan</th><th>Aksi</th></tr></thead>
+        <tbody id="petugasTable"><tr><td colspan="5" style="text-align:center;color:#a0aec0;padding:24px">Memuat data...</td></tr></tbody>
+      </table></div></div>
+    </div>
+  </div>
+
+  <!-- ══ STATISTIK ══ -->
+  <div class="panel" id="panel-statistik">
+    <div class="fs">
+      <div class="fs-hd" onclick="toggleFs(this)">
+        <div class="fs-hd-l"><div class="fs-ic">📊</div><div><div class="fs-title">Angka Statistik Utama</div><div class="fs-sub">4 kartu angka & labelnya</div></div></div>
+        <span class="fs-tgl open">▾</span>
+      </div>
+      <div class="fs-bd open">
+        <div class="stat-ig">
+          <div class="stat-ic"><label>Label Stat 1</label><input id="s_lblNikah" placeholder="Total Nikah (2024)"/></div>
+          <div class="stat-ic"><label>Nilai Stat 1</label><input type="number" id="s_nikah" placeholder="127"/></div>
+          <div class="stat-ic"><label>Label Stat 2</label><input id="s_lblBulan" placeholder="Rata-rata / Bulan"/></div>
+          <div class="stat-ic"><label>Nilai Stat 2</label><input type="number" id="s_bulan" placeholder="11"/></div>
+          <div class="stat-ic"><label>Label Stat 3</label><input id="s_lblRujuk" placeholder="Rujuk"/></div>
+          <div class="stat-ic"><label>Nilai Stat 3</label><input type="number" id="s_rujuk" placeholder="3"/></div>
+          <div class="stat-ic"><label>Label Stat 4</label><input id="s_lblBimwin" placeholder="Peserta Bimwin"/></div>
+          <div class="stat-ic"><label>Nilai Stat 4</label><input type="number" id="s_bimwin" placeholder="254"/></div>
+          <div class="stat-ic"><label>Judul Grafik</label><input id="s_chartTitle" placeholder="📈 Grafik Pernikahan..."/></div>
         </div>
       </div>
     </div>
-
-    <!-- ===== INFO KANTOR ===== -->
-    <div class="panel" id="panel-info">
-      <div class="form-section">
-        <div class="fs-header" onclick="toggleSection(this)">
-          <div class="fs-header-left">
-            <div class="fs-icon">📍</div>
-            <div><div class="fs-title">Informasi Kantor</div><div class="fs-subtitle">Alamat, telepon, email, dan jam operasional</div></div>
-          </div>
-          <span class="fs-toggle open">▾</span>
-        </div>
-        <div class="fs-body open">
-          <div class="frow single">
-            <div class="fgroup">
-              <label>Alamat Lengkap</label>
-              <textarea>Jl. [Nama Jalan], Kecamatan Sekongkang, Kabupaten Sumbawa Barat, Nusa Tenggara Barat — [Kode Pos]</textarea>
-            </div>
-          </div>
-          <div class="frow">
-            <div class="fgroup">
-              <label>Nomor Telepon</label>
-              <input type="tel" value="(0372) XXXXXXX" />
-            </div>
-            <div class="fgroup">
-              <label>WhatsApp</label>
-              <input type="tel" value="0812-XXXX-XXXX" />
-            </div>
-          </div>
-          <div class="frow">
-            <div class="fgroup">
-              <label>Email Resmi</label>
-              <input type="email" value="kuasekongkang@kemenag.go.id" />
-            </div>
-            <div class="fgroup">
-              <label>Google Maps Embed URL</label>
-              <input type="text" value="https://www.google.com/maps/embed?pb=..." />
-            </div>
-          </div>
-          <div class="frow">
-            <div class="fgroup">
-              <label>Jam Operasional (Senin–Kamis)</label>
-              <input type="text" value="08.00 – 16.00 WITA" />
-            </div>
-            <div class="fgroup">
-              <label>Jam Operasional (Jumat)</label>
-              <input type="text" value="08.00 – 11.30 WITA" />
-            </div>
-          </div>
-        </div>
+    <div class="fs">
+      <div class="fs-hd" onclick="toggleFs(this)">
+        <div class="fs-hd-l"><div class="fs-ic">📉</div><div><div class="fs-title">Data Bulanan – Pernikahan</div><div class="fs-sub">Jan s/d Des</div></div></div>
+        <span class="fs-tgl">▾</span>
+      </div>
+      <div class="fs-bd">
+        <div class="month-ig" id="monthNikah"></div>
       </div>
     </div>
-
-    <!-- ===== FOOTER ===== -->
-    <div class="panel" id="panel-footer">
-      <div class="form-section">
-        <div class="fs-header" onclick="toggleSection(this)">
-          <div class="fs-header-left">
-            <div class="fs-icon">📄</div>
-            <div><div class="fs-title">Footer Website</div><div class="fs-subtitle">Teks footer, tautan sosial media</div></div>
-          </div>
-          <span class="fs-toggle open">▾</span>
-        </div>
-        <div class="fs-body open">
-          <div class="frow single">
-            <div class="fgroup">
-              <label>Deskripsi Footer</label>
-              <textarea>Kantor Urusan Agama Kecamatan Sekongkang, Kabupaten Sumbawa Barat, melayani masyarakat dengan amanah dan profesional dalam urusan keagamaan dan pernikahan.</textarea>
-            </div>
-          </div>
-          <div class="frow">
-            <div class="fgroup"><label>Link Facebook</label><input type="url" placeholder="https://facebook.com/..." /></div>
-            <div class="fgroup"><label>Link Instagram</label><input type="url" placeholder="https://instagram.com/..." /></div>
-          </div>
-          <div class="frow">
-            <div class="fgroup"><label>Link YouTube</label><input type="url" placeholder="https://youtube.com/..." /></div>
-            <div class="fgroup"><label>Link WhatsApp</label><input type="url" placeholder="https://wa.me/62..." /></div>
-          </div>
-          <div class="frow single">
-            <div class="fgroup">
-              <label>Teks Copyright</label>
-              <input type="text" value="© 2024 KUA Kecamatan Sekongkang. Hak Cipta Dilindungi." />
-            </div>
-          </div>
-        </div>
+    <div class="fs">
+      <div class="fs-hd" onclick="toggleFs(this)">
+        <div class="fs-hd-l"><div class="fs-ic">📉</div><div><div class="fs-title">Data Bulanan – Cerai Talak</div><div class="fs-sub">Jan s/d Des</div></div></div>
+        <span class="fs-tgl">▾</span>
+      </div>
+      <div class="fs-bd">
+        <div class="month-ig" id="monthCerai"></div>
       </div>
     </div>
+  </div>
 
-    <!-- ===== SEO ===== -->
-    <div class="panel" id="panel-seo">
-      <div class="form-section">
-        <div class="fs-header" onclick="toggleSection(this)">
-          <div class="fs-header-left">
-            <div class="fs-icon">🔍</div>
-            <div><div class="fs-title">SEO & Meta Tags</div><div class="fs-subtitle">Pengaturan mesin pencari</div></div>
-          </div>
-          <span class="fs-toggle open">▾</span>
-        </div>
-        <div class="fs-body open">
-          <div class="frow single">
-            <div class="fgroup">
-              <label>Judul Halaman (Title Tag)</label>
-              <input type="text" value="KUA Kecamatan Sekongkang – Kabupaten Sumbawa Barat" />
-            </div>
-          </div>
-          <div class="frow single">
-            <div class="fgroup">
-              <label>Meta Description</label>
-              <textarea>Website resmi Kantor Urusan Agama Kecamatan Sekongkang, Kabupaten Sumbawa Barat. Layanan pernikahan, konsultasi keagamaan, dan bimbingan pranikah.</textarea>
-            </div>
-          </div>
-          <div class="frow single">
-            <div class="fgroup">
-              <label>Keywords (pisahkan koma)</label>
-              <input type="text" value="KUA Sekongkang, nikah Sumbawa Barat, pendaftaran nikah, konsultasi agama NTB" />
-            </div>
-          </div>
+  <!-- ══ ULASAN ══ -->
+  <div class="panel" id="panel-ulasan">
+    <div class="card">
+      <div class="card-hd"><h3>⭐ Kelola Ulasan</h3><button class="btn-add" onclick="openModal('addUlasan')">+ Tambah Ulasan</button></div>
+      <div class="card-bd"><div class="ul-list" id="ulasanList"><div style="color:#a0aec0">Memuat...</div></div></div>
+    </div>
+  </div>
+
+  <!-- ══ MATERI ══ -->
+  <div class="panel" id="panel-materi">
+    <div class="card">
+      <div class="card-hd"><h3>📚 Kelola Materi Bimwin</h3><button class="btn-add" onclick="openModal('addMateri')">+ Tambah Materi</button></div>
+      <div class="card-bd"><div class="materi-list" id="materiList"><div style="color:#a0aec0">Memuat...</div></div></div>
+    </div>
+  </div>
+
+  <!-- ══ KONSULTASI ══ -->
+  <div class="panel" id="panel-konsultasi">
+    <div class="card">
+      <div class="card-hd"><h3>💬 Pesan Konsultasi Masuk</h3>
+        <div style="display:flex;gap:8px">
+          <select id="konsulFilter" onchange="filterKonsul()" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:6px 10px;font-size:13px;font-family:'Tajawal',sans-serif">
+            <option value="semua">Semua</option>
+            <option value="baru">Baru</option>
+            <option value="diproses">Diproses</option>
+            <option value="selesai">Selesai</option>
+          </select>
         </div>
       </div>
+      <div class="card-bd" id="konsulList"><div style="color:#a0aec0">Memuat...</div></div>
     </div>
+  </div>
+
+  <!-- ══ INFO KANTOR ══ -->
+  <div class="panel" id="panel-infokantor">
+    <div class="fs">
+      <div class="fs-hd" onclick="toggleFs(this)">
+        <div class="fs-hd-l"><div class="fs-ic">📍</div><div><div class="fs-title">Informasi Kantor</div><div class="fs-sub">Alamat, telepon, jam operasional</div></div></div>
+        <span class="fs-tgl open">▾</span>
+      </div>
+      <div class="fs-bd open">
+        <div class="frow s1"><div class="fgrp"><label>Alamat Lengkap</label><textarea id="h_infoAlamat" rows="3" placeholder="Jl. ..."></textarea></div></div>
+        <div class="frow">
+          <div class="fgrp"><label>Nomor Telepon</label><input id="h_infoTelp" placeholder="(0372) XXXXXXX"/></div>
+          <div class="fgrp"><label>WhatsApp</label><input id="h_infoWa" placeholder="0812-XXXX-XXXX"/></div>
+        </div>
+        <div class="frow">
+          <div class="fgrp"><label>Email Resmi</label><input type="email" id="h_infoEmail" placeholder="kua@kemenag.go.id"/></div>
+          <div class="fgrp"><label>Jam Operasional Senin–Kamis</label><input id="h_jamPagi" placeholder="08.00 – 16.00 WITA"/></div>
+        </div>
+        <div class="frow s1"><div class="fgrp"><label>Jam Operasional Jumat</label><input id="h_jamJumat" placeholder="08.00 – 11.30 WITA"/></div></div>
+        <div class="frow s1"><div class="fgrp"><label>Google Maps Embed URL</label><input id="h_mapSrc" placeholder="https://www.google.com/maps/embed?pb=..."/><span class="hint">Buka Google Maps → Share → Embed a map → salin src="..."</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER & SOSMED ══ -->
+  <div class="panel" id="panel-footer">
+    <div class="fs">
+      <div class="fs-hd" onclick="toggleFs(this)">
+        <div class="fs-hd-l"><div class="fs-ic">📄</div><div><div class="fs-title">Footer Website</div><div class="fs-sub">Deskripsi, sosial media, copyright</div></div></div>
+        <span class="fs-tgl open">▾</span>
+      </div>
+      <div class="fs-bd open">
+        <div class="frow s1"><div class="fgrp"><label>Deskripsi Footer</label><textarea id="h_footerDesc" rows="3"></textarea></div></div>
+        <div class="frow"><div class="fgrp"><label>Link Facebook</label><input id="h_fbLink" type="url" placeholder="https://facebook.com/..."/></div><div class="fgrp"><label>Link Instagram</label><input id="h_igLink" type="url" placeholder="https://instagram.com/..."/></div></div>
+        <div class="frow"><div class="fgrp"><label>Link YouTube</label><input id="h_ytLink" type="url" placeholder="https://youtube.com/..."/></div><div class="fgrp"><label>Link WhatsApp</label><input id="h_waLink" type="url" placeholder="https://wa.me/628..."/></div></div>
+        <div class="frow s1"><div class="fgrp"><label>Teks Copyright</label><input id="h_footerCopy" placeholder="© 2024 KUA Kecamatan Sekongkang..."/></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SETTING AKUN ══ -->
+  <div class="panel" id="panel-akun">
+    <div class="setting-card">
+      <h3>🔐 Pengaturan Akun Admin</h3>
+      <p class="sub">Ubah email dan password untuk login ke panel admin ini.</p>
+      <div class="fgrp" style="margin-bottom:16px"><label>Email Saat Ini</label><input type="email" id="akun_emailNow" disabled style="background:#f7fafc;color:#718096"/></div>
+      <div class="fgrp" style="margin-bottom:16px"><label>Email Baru</label><input type="email" id="akun_emailNew" placeholder="email-baru@domain.com"/></div>
+      <div class="fgrp" style="margin-bottom:16px"><label>Password Baru</label>
+        <div class="pw-wrap">
+          <input type="password" id="akun_pwNew" placeholder="Minimal 8 karakter"/>
+          <button class="pw-eye" type="button" onclick="togglePw('akun_pwNew')">👁</button>
+        </div>
+      </div>
+      <div class="fgrp" style="margin-bottom:16px"><label>Konfirmasi Password Baru</label>
+        <div class="pw-wrap">
+          <input type="password" id="akun_pwConfirm" placeholder="Ulangi password baru"/>
+          <button class="pw-eye" type="button" onclick="togglePw('akun_pwConfirm')">👁</button>
+        </div>
+      </div>
+      <div class="fgrp" style="margin-bottom:16px"><label>Password Saat Ini (untuk verifikasi)</label>
+        <div class="pw-wrap">
+          <input type="password" id="akun_pwCurrent" placeholder="Password login saat ini"/>
+          <button class="pw-eye" type="button" onclick="togglePw('akun_pwCurrent')">👁</button>
+        </div>
+      </div>
+      <div class="security-note">🔒 Password tidak pernah disimpan di database — dikelola sepenuhnya oleh Firebase Authentication dan tidak terlihat di source code maupun inspect element.</div>
+      <button class="btn-add" style="margin-top:18px;width:100%;padding:12px;border-radius:10px;font-size:14px" onclick="updateAkun()">🔐 Perbarui Akun</button>
+    </div>
+  </div>
+
+  <!-- ══ SEO ══ -->
+  <div class="panel" id="panel-seo">
+    <div class="fs">
+      <div class="fs-hd" onclick="toggleFs(this)">
+        <div class="fs-hd-l"><div class="fs-ic">🔍</div><div><div class="fs-title">SEO & Meta Tags</div><div class="fs-sub">Judul halaman dan deskripsi mesin pencari</div></div></div>
+        <span class="fs-tgl open">▾</span>
+      </div>
+      <div class="fs-bd open">
+        <div class="frow s1"><div class="fgrp"><label>Judul Halaman (Title Tag)</label><input id="h_seoTitle" placeholder="KUA Kecamatan Sekongkang – Kabupaten Sumbawa Barat"/></div></div>
+        <div class="frow s1"><div class="fgrp"><label>Meta Description</label><textarea id="h_seoDesc" rows="3"></textarea></div></div>
+        <div class="frow s1"><div class="fgrp"><label>Keywords (pisahkan koma)</label><input id="h_seoKeys" placeholder="KUA Sekongkang, nikah Sumbawa Barat..."/></div></div>
+      </div>
+    </div>
+  </div>
 
   </div><!-- /content -->
 </div><!-- /main -->
 
-<!-- ===== MODALS ===== -->
+<!-- ══ MODALS ══ -->
 
-<!-- Modal Tambah Petugas -->
-<div class="modal-overlay" id="modal-addPetugas">
-  <div class="modal-box">
-    <h3>👤 Tambah Petugas Baru</h3>
-    <div class="frow single"><div class="fgroup"><label>Nama Lengkap</label><input type="text" placeholder="Nama lengkap dengan gelar" /></div></div>
+<!-- Modal Tambah/Edit Petugas -->
+<div class="modal-ov" id="modal-petugas">
+  <div class="modal-bx">
+    <h3 id="mPetugasTitle">👤 Tambah Petugas</h3>
+    <input type="hidden" id="mp_id"/>
+    <div class="frow s1"><div class="fgrp"><label>Nama Lengkap</label><input id="mp_nama" placeholder="Nama lengkap dengan gelar"/></div></div>
     <div class="frow">
-      <div class="fgroup"><label>Jabatan</label>
-        <select><option>Kepala KUA</option><option>Penghulu</option><option>Penyuluh Agama</option><option>Staf Tata Usaha</option><option>Lainnya</option></select>
-      </div>
-      <div class="fgroup"><label>NIP</label><input type="text" placeholder="Nomor Induk Pegawai" /></div>
-    </div>
-    <div class="frow single">
-      <div class="fgroup"><label>Deskripsi Singkat</label><textarea placeholder="Tugas dan tanggung jawab..."></textarea></div>
-    </div>
-    <div class="frow single">
-      <div class="fgroup">
-        <label>Foto Petugas</label>
-        <div class="photo-upload">
-          <div class="pu-icon">📸</div>
-          <p><strong>Klik untuk upload</strong> atau seret foto ke sini</p>
-          <p style="margin-top:6px;font-size:11px">JPG, PNG · Maks 2MB · Rasio 1:1 disarankan</p>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal('addPetugas')">Batal</button>
-      <button class="btn-confirm" onclick="closeModal('addPetugas');showToast('✅ Petugas berhasil ditambahkan!')">Tambah Petugas</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Edit Petugas -->
-<div class="modal-overlay" id="modal-editPetugas">
-  <div class="modal-box">
-    <h3>✏️ Edit Data Petugas</h3>
-    <div class="frow single"><div class="fgroup"><label>Nama Lengkap</label><input type="text" value="[Nama Kepala KUA]" /></div></div>
-    <div class="frow">
-      <div class="fgroup"><label>Jabatan</label>
-        <select><option selected>Kepala KUA</option><option>Penghulu</option><option>Penyuluh Agama</option><option>Staf Tata Usaha</option></select>
-      </div>
-      <div class="fgroup"><label>Status</label>
-        <select><option>Aktif</option><option>Honorer</option><option>PPNPN</option></select>
-      </div>
-    </div>
-    <div class="frow single">
-      <div class="fgroup"><label>Deskripsi Singkat</label><textarea>Bertanggung jawab atas seluruh operasional dan pelayanan Kantor Urusan Agama Kecamatan Sekongkang.</textarea></div>
-    </div>
-    <div class="frow single">
-      <div class="fgroup">
-        <label>Ganti Foto</label>
-        <div class="fgroup">
-        <label>URL Foto Petugas</label>
-        <input type="url" id="petugasFoto" placeholder="https://..." style="width:100%" />
-        <span class="hint">Masukkan link foto dari penyimpanan online (Pastikan akses publik).</span>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal('editPetugas')">Batal</button>
-      <button class="btn-confirm" onclick="closeModal('editPetugas');showToast('✅ Data petugas berhasil diperbarui!')">Simpan Perubahan</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Tambah Materi -->
-<div class="modal-overlay" id="modal-addMateri">
-  <div class="modal-box">
-    <h3>📚 Tambah Materi Baru</h3>
-    <div class="frow single"><div class="fgroup"><label>Judul Materi</label><input type="text" placeholder="Contoh: Modul Bimbingan Pra Nikah" /></div></div>
-    <div class="frow single"><div class="fgroup"><label>Deskripsi Singkat</label><textarea placeholder="Isi singkat materi ini..."></textarea></div></div>
-    <div class="frow single">
-      <div class="fgroup">
-        <label>Jenis Materi</label>
-        <select onchange="toggleLinkType(this.value)">
-          <option value="pdf">📄 PDF (Google Drive)</option>
-          <option value="video">▶ Video YouTube</option>
+      <div class="fgrp"><label>Jabatan</label>
+        <select id="mp_jabatan">
+          <option>Kepala KUA</option><option>Penghulu</option>
+          <option>Penyuluh Agama Islam</option><option>Staf Tata Usaha</option><option>Lainnya</option>
         </select>
       </div>
+      <div class="fgrp"><label>Badge (label di foto)</label><input id="mp_badge" placeholder="Kepala KUA"/></div>
     </div>
-    <div class="frow single" id="gdriveLinkRow">
-      <div class="fgroup">
-        <label>Link Google Drive</label>
-        <input type="url" placeholder="https://drive.google.com/file/d/XXXXX/view" />
-        <span class="hint">Pastikan file dibagikan ke publik ("Anyone with the link can view")</span>
+    <div class="frow"><div class="fgrp"><label>Urutan Tampil</label><input type="number" id="mp_urutan" value="1" min="1"/></div><div class="fgrp"><label>Inisial (jika tidak ada foto)</label><input id="mp_inisial" placeholder="KA" maxlength="3"/></div></div>
+    <div class="frow s1"><div class="fgrp"><label>Deskripsi Singkat</label><textarea id="mp_deskripsi" rows="3" placeholder="Tugas dan tanggung jawab..."></textarea></div></div>
+    <div class="frow s1">
+      <div class="fgrp">
+        <label>Foto Petugas (URL dari storage online)</label>
+        <input id="mp_foto" type="url" placeholder="https://... (Google Drive share link / URL foto langsung)"/>
+        <span class="hint">Contoh: upload ke Google Drive → Share → Anyone with link → salin link langsung. Atau gunakan Cloudinary, ImgBB, dll.</span>
+        <div style="margin-top:10px;text-align:center" id="mp_preview"></div>
       </div>
     </div>
-    <div class="frow single" id="youtubeLinkRow" style="display:none">
-      <div class="fgroup">
+    <div class="modal-ft">
+      <button class="btn-cancel" onclick="closeModal('petugas')">Batal</button>
+      <button class="btn-confirm" id="mpSaveBtn" onclick="savePetugas()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah/Edit Ulasan -->
+<div class="modal-ov" id="modal-ulasan">
+  <div class="modal-bx">
+    <h3 id="mUlasanTitle">⭐ Tambah Ulasan</h3>
+    <input type="hidden" id="mu_id"/>
+    <div class="frow"><div class="fgrp"><label>Nama</label><input id="mu_nama" placeholder="Nama pemberi ulasan"/></div><div class="fgrp"><label>Tanggal</label><input id="mu_tanggal" placeholder="Januari 2024"/></div></div>
+    <div class="frow"><div class="fgrp"><label>Rating</label><select id="mu_rating"><option value="5">★★★★★ (5)</option><option value="4">★★★★☆ (4)</option><option value="3">★★★☆☆ (3)</option><option value="2">★★☆☆☆ (2)</option></select></div><div class="fgrp"><label>Urutan</label><input type="number" id="mu_urutan" value="1" min="1"/></div></div>
+    <div class="frow s1"><div class="fgrp"><label>Isi Ulasan</label><textarea id="mu_teks" rows="4" placeholder="Tuliskan ulasan..."></textarea></div></div>
+    <div class="modal-ft">
+      <button class="btn-cancel" onclick="closeModal('ulasan')">Batal</button>
+      <button class="btn-confirm" id="muSaveBtn" onclick="saveUlasan()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah/Edit Materi -->
+<div class="modal-ov" id="modal-materi">
+  <div class="modal-bx">
+    <h3 id="mMateriTitle">📚 Tambah Materi</h3>
+    <input type="hidden" id="mm_id"/>
+    <div class="frow s1"><div class="fgrp"><label>Judul Materi</label><input id="mm_judul" placeholder="Contoh: Modul Bimbingan Pra Nikah"/></div></div>
+    <div class="frow s1"><div class="fgrp"><label>Deskripsi Singkat</label><textarea id="mm_deskripsi" rows="2" placeholder="Isi singkat materi..."></textarea></div></div>
+    <div class="frow"><div class="fgrp"><label>Jenis Materi</label>
+      <select id="mm_tipe" onchange="toggleMateriLink()">
+        <option value="pdf">📄 PDF (Google Drive)</option>
+        <option value="video">▶ Video YouTube</option>
+      </select>
+    </div><div class="fgrp"><label>Urutan Tampil</label><input type="number" id="mm_urutan" value="1" min="1"/></div></div>
+    <div class="frow s1" id="row-pdf">
+      <div class="fgrp">
+        <label>Link Google Drive (share link atau direct link)</label>
+        <input id="mm_link" type="url" placeholder="https://drive.google.com/file/d/XXX/view"/>
+        <span class="hint">Klik kanan file di Drive → Share → "Anyone with the link" → salin link</span>
+      </div>
+    </div>
+    <div class="frow s1" id="row-vid" style="display:none">
+      <div class="fgrp">
         <label>Link YouTube</label>
-        <input type="url" placeholder="https://youtu.be/XXXXX atau https://youtube.com/watch?v=XXXXX" />
+        <input id="mm_linkVid" type="url" placeholder="https://youtu.be/XXX atau https://youtube.com/watch?v=XXX"/>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal('addMateri')">Batal</button>
-      <button class="btn-confirm" onclick="closeModal('addMateri');showToast('✅ Materi berhasil ditambahkan!')">Tambah Materi</button>
+    <div class="modal-ft">
+      <button class="btn-cancel" onclick="closeModal('materi')">Batal</button>
+      <button class="btn-confirm" id="mmSaveBtn" onclick="saveMateri()">Simpan</button>
     </div>
   </div>
 </div>
 
-<!-- Modal Tambah Ulasan -->
-<div class="modal-overlay" id="modal-addUlasan">
-  <div class="modal-box">
-    <h3>⭐ Tambah Ulasan</h3>
-    <div class="frow">
-      <div class="fgroup"><label>Nama</label><input type="text" placeholder="Nama pemberi ulasan" /></div>
-      <div class="fgroup"><label>Tanggal</label><input type="month" /></div>
-    </div>
-    <div class="frow single"><div class="fgroup"><label>Rating</label>
-      <select><option>★★★★★ (5)</option><option>★★★★☆ (4)</option><option>★★★☆☆ (3)</option></select>
-    </div></div>
-    <div class="frow single"><div class="fgroup"><label>Isi Ulasan</label><textarea placeholder="Tuliskan ulasan..."></textarea></div></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal('addUlasan')">Batal</button>
-      <button class="btn-confirm" onclick="closeModal('addUlasan');showToast('✅ Ulasan berhasil ditambahkan!')">Simpan Ulasan</button>
+<!-- Modal Detail Konsultasi -->
+<div class="modal-ov" id="modal-konsultasi">
+  <div class="modal-bx" style="max-width:480px">
+    <h3>💬 Detail Konsultasi</h3>
+    <div id="konsulDetail"></div>
+    <div class="modal-ft">
+      <button class="btn-cancel" onclick="closeModal('konsultasi')">Tutup</button>
+      <button class="btn-ok" id="konsulOkBtn" onclick="updateKonsulStatus()">✓ Tandai Selesai</button>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<script>
+<!-- FIREBASE -->
+<script src="firebase-init.js"></script>
 <script type="module">
-  // Import Firebase
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, get, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut,
+         updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, updateDoc, deleteDoc,
+         serverTimestamp, query, orderBy, where, limit }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // TODO: GANTI DENGAN CONFIG FIREBASE ANDA
-  const firebaseConfig = {
-  apiKey: "AIzaSyA95tw-ECPzfIH9eJmi3VxFYoGzRQdiwWM",
-  authDomain: "website-kuasekongkang.firebaseapp.com",
-  projectId: "website-kuasekongkang",
-  storageBucket: "website-kuasekongkang.firebasestorage.app",
-  messagingSenderId: "757740985056",
-  appId: "1:757740985056:web:fc85a3e18b17f9413d8e85"
-};
+const app  = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const auth = getAuth(app);
+let currentUser = null;
+let _allKonsultasi = [];
 
-  let currentEditId = null;
-
-  // ===== AUTENTIKASI (Hiding Credentials) =====
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      document.getElementById('modal-login').classList.remove('open');
-      loadAllData(); // Load data hanya jika sudah login
-    } else {
-      document.getElementById('modal-login').classList.add('open');
-    }
-  });
-
-  window.loginAdmin = () => {
-    const email = document.getElementById('loginEmail').value;
-    const pass = document.getElementById('loginPass').value;
-    signInWithEmailAndPassword(auth, email, pass)
-      .then(() => showToast('✅ Login Berhasil!'))
-      .catch((error) => alert('Login Gagal: ' + error.message));
-  };
-
-  window.logoutAdmin = () => {
-    signOut(auth).then(() => window.location.reload());
-  };
-
-  window.updatePasswordAdmin = () => {
-    const user = auth.currentUser;
-    const newPass = document.getElementById('newAdminPassword').value;
-    if(newPass.length < 6) return alert("Password minimal 6 karakter!");
-    updatePassword(user, newPass).then(() => {
-      showToast('✅ Password berhasil diubah!');
-      document.getElementById('newAdminPassword').value = '';
-    }).catch(err => alert("Gagal ubah password: " + err.message));
-  };
-
-  // ===== FUNGSI CRUD FIREBASE =====
-  function loadAllData() {
-    // Load Petugas
-    onValue(ref(db, 'petugas'), (snapshot) => {
-      const tbody = document.getElementById('petugasTable');
-      tbody.innerHTML = '';
-      snapshot.forEach(child => {
-        const data = child.val();
-        tbody.innerHTML += `
-          <tr>
-            <td><img src="${data.foto || ''}" alt="Foto" style="width:36px;height:36px;border-radius:10px;object-fit:cover;"></td>
-            <td><strong>${data.nama}</strong></td>
-            <td>${data.jabatan}</td>
-            <td>${data.nip}</td>
-            <td><span class="badge badge-green">Aktif</span></td>
-            <td>
-              <div class="table-actions">
-                <button class="btn-del" onclick="hapusData('petugas', '${child.key}')">🗑 Hapus</button>
-              </div>
-            </td>
-          </tr>`;
-      });
-    });
-    
-     // ===== ACCORDION =====
-function toggleSection(header) {
-  const body = header.nextElementSibling;
-  const toggle = header.querySelector('.fs-toggle');
-  body.classList.toggle('open');
-  toggle.classList.toggle('open');
-}
-
-// ===== MODALS =====
-function openModal(id) {
-  document.getElementById('modal-' + id).classList.add('open');
-}
-
-function closeModal(id) {
-  document.getElementById('modal-' + id).classList.remove('open');
-}
-
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+// ── AUTH GUARD ──
+onAuthStateChanged(auth, user => {
+  if(!user){ window.location.href='login.html'; return; }
+  currentUser = user;
+  document.getElementById('sbEmail').textContent = user.email;
+  document.getElementById('sbAv').textContent    = (user.email||'A')[0].toUpperCase();
+  document.getElementById('akun_emailNow').value = user.email;
+  loadDashboard();
+  loadHeroForm();
+  loadStatistikForm();
+  loadPetugasTable();
+  loadUlasanList();
+  loadMateriList();
+  loadKonsulList();
+  loadInfoForm();
+  loadFooterForm();
+  loadSeoForm();
 });
 
-// ===== MATERI LINK TYPE =====
-function toggleLinkType(val) {
-  document.getElementById('gdriveLinkRow').style.display = val === 'pdf' ? '' : 'none';
-  document.getElementById('youtubeLinkRow').style.display = val === 'video' ? '' : 'none';
+window.doLogout = async () => { await signOut(auth); window.location.href='login.html'; };
+
+// ══════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════
+async function loadDashboard(){
+  try{
+    const [statSnap,konsulSnap,materiSnap,ulasanSnap] = await Promise.all([
+      getDoc(doc(db,'statistik','main')),
+      getDocs(collection(db,'konsultasi')),
+      getDocs(collection(db,'materi')),
+      getDocs(collection(db,'ulasan')),
+    ]);
+    const s = statSnap.exists() ? statSnap.data() : {};
+    document.getElementById('dsh-nikah').textContent  = s.nikah  || '—';
+    document.getElementById('dsh-konsul').textContent = konsulSnap.size;
+    document.getElementById('dsh-materi').textContent = materiSnap.size;
+    document.getElementById('dsh-ulasan').textContent = ulasanSnap.size;
+    // badge
+    const baru = [...konsulSnap.docs].filter(d=>d.data().status==='baru').length;
+    const bdgK=document.getElementById('bdgKonsul');
+    const bdgU=document.getElementById('bdgUlasan');
+    if(baru>0){bdgK.textContent=baru;}else{bdgK.textContent='';}
+    const ndot=document.getElementById('notifDot');
+    ndot.style.display=baru>0?'block':'none';
+    // activity: recent konsultasi
+    const konsulArr=[...konsulSnap.docs].map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>((b.createdAt?.seconds||0)-(a.createdAt?.seconds||0))).slice(0,5);
+    const acList=document.getElementById('activityList');
+    acList.innerHTML=konsulArr.length?konsulArr.map(k=>`
+      <div class="act-item">
+        <div class="act-dot" style="background:var(--gm)"></div>
+        <div><div class="act-txt">Konsultasi dari <strong>${k.nama}</strong> – ${k.topik}</div>
+        <div class="act-time">${k.status==='baru'?'🔴 Baru':k.status==='diproses'?'🔵 Diproses':'✅ Selesai'}</div></div>
+      </div>`).join(''):'<div style="color:#a0aec0;font-size:13px">Belum ada aktivitas.</div>';
+    // dash konsul recent
+    const dashK=document.getElementById('dashKonsul');
+    dashK.innerHTML=konsulArr.slice(0,3).map(k=>`
+      <div style="padding:10px 0;border-bottom:1px solid #f0f4f1;font-size:13px">
+        <strong>${k.nama}</strong> — ${k.topik}<br>
+        <span style="font-size:12px;color:#a0aec0">${k.status}</span>
+      </div>`).join('')||'<div style="color:#a0aec0">Belum ada konsultasi.</div>';
+  }catch(e){console.error(e);}
 }
 
-// ===== DELETE CONFIRM =====
-function confirmDelete(type) {
-  if (confirm(`Hapus ${type} ini? Tindakan tidak dapat dibatalkan.`)) {
-    showToast(`🗑 ${type} berhasil dihapus.`);
-  }
+// ══════════════════════════════════════
+// HERO / CONFIG
+// ══════════════════════════════════════
+async function loadHeroForm(){
+  try{
+    const snap=await getDoc(doc(db,'siteConfig','main'));
+    const d=snap.exists()?snap.data():{};
+    const FIELDS=['heroTitle','heroArabic','heroSubtitle','heroBtnPrimary','heroBtnSecond',
+      'hStat1','hStat1L','hStat2','hStat2L','hStat3','hStat3L','hStat4','hStat4L','heroStatYear',
+      'pengumuman','infoAlamat','infoTelp','infoWa','infoEmail','jamPagi','jamJumat','mapSrc',
+      'footerDesc','fbLink','igLink','ytLink','waLink','footerCopy',
+      'seoTitle','seoDesc','seoKeys'];
+    FIELDS.forEach(f=>{const el=document.getElementById('h_'+f);if(el)el.value=d[f]||'';});
+    if(d.infoTelp){document.getElementById('h_infoTelp').value=d.infoTelp;}
+  }catch(e){console.error(e);}
 }
 
-// ===== SAVE ALL =====
-function saveAll() {
-  showToast('💾 Semua perubahan berhasil disimpan!');
+async function saveHeroConfig(){
+  const FIELDS=['heroTitle','heroArabic','heroSubtitle','heroBtnPrimary','heroBtnSecond',
+    'hStat1','hStat1L','hStat2','hStat2L','hStat3','hStat3L','hStat4','hStat4L','heroStatYear',
+    'pengumuman','infoAlamat','infoTelp','infoWa','infoEmail','jamPagi','jamJumat','mapSrc',
+    'footerDesc','fbLink','igLink','ytLink','waLink','footerCopy',
+    'seoTitle','seoDesc','seoKeys'];
+  const data={};
+  FIELDS.forEach(f=>{const el=document.getElementById('h_'+f);if(el)data[f]=el.value;});
+  // build infoTelp composite
+  const telp=data.infoTelp||''; const wa=data.infoWa||'';
+  data.infoTelp=telp+(wa?'\n💬 WhatsApp: '+wa:'');
+  data.infoJam=(data.jamPagi||'')+(data.jamJumat?'\nJumat: '+data.jamJumat:'')+(data.jamPagi?'\nSabtu – Minggu: Tutup':'');
+  await setDoc(doc(db,'siteConfig','main'),data,{merge:true});
 }
 
-// ===== TOAST =====
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
+// ══════════════════════════════════════
+// STATISTIK
+// ══════════════════════════════════════
+const MONTHS=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+async function loadStatistikForm(){
+  const snap=await getDoc(doc(db,'statistik','main'));
+  const d=snap.exists()?snap.data():{};
+  ['nikah','bulan','rujuk','bimwin','chartTitle','lblNikah','lblBulan','lblRujuk','lblBimwin'].forEach(f=>{
+    const el=document.getElementById('s_'+f); if(el) el.value=d[f]||'';
+  });
+  // build month inputs
+  const dN=d.dataPernikahan||Array(12).fill(0);
+  const dC=d.dataCerai||Array(12).fill(0);
+  buildMonthInputs('monthNikah',dN);
+  buildMonthInputs('monthCerai',dC);
 }
 
-// ===== SIDEBAR MOBILE =====
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').style.display = 
-    document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+function buildMonthInputs(containerId,data){
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML=MONTHS.map((m,i)=>`
+    <div class="month-ic">
+      <label>${m}</label>
+      <input type="number" id="${containerId}_${i}" value="${data[i]||0}" min="0"/>
+    </div>`).join('');
 }
 
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').style.display = 'none';
+async function saveStatistik(){
+  const d={};
+  ['nikah','bulan','rujuk','bimwin','chartTitle','lblNikah','lblBulan','lblRujuk','lblBimwin'].forEach(f=>{
+    const el=document.getElementById('s_'+f);if(el)d[f]=isNaN(el.value)?el.value:Number(el.value);
+  });
+  d.dataPernikahan=MONTHS.map((_,i)=>Number(document.getElementById('monthNikah_'+i)?.value||0));
+  d.dataCerai    =MONTHS.map((_,i)=>Number(document.getElementById('monthCerai_'+i)?.value||0));
+  await setDoc(doc(db,'statistik','main'),d,{merge:true});
 }
 
+// ══════════════════════════════════════
+// PETUGAS
+// ══════════════════════════════════════
+async function loadPetugasTable(){
+  try{
+    const q=query(collection(db,'petugas'),orderBy('urutan','asc'));
+    const snap=await getDocs(q);
+    const list=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderPetugasTable(list);
+  }catch{renderPetugasTable([]);}
+}
 
-  window.simpanPetugasBaru = () => {
-    // Ambil value dari input modal tambah petugas (pastikan id input disesuaikan di HTML)
-    const nama = document.querySelector('#modal-addPetugas input[placeholder="Nama lengkap dengan gelar"]').value;
-    const jabatan = document.querySelector('#modal-addPetugas select').value;
-    const nip = document.querySelector('#modal-addPetugas input[placeholder="Nomor Induk Pegawai"]').value;
-    const foto = document.getElementById('petugasFoto').value; // Mengambil dari URL online
+function renderPetugasTable(list){
+  const el=document.getElementById('petugasTable');
+  if(!list.length){el.innerHTML='<tr><td colspan="5" style="text-align:center;color:#a0aec0;padding:24px">Belum ada data petugas.</td></tr>';return;}
+  el.innerHTML=list.map(p=>`
+    <tr>
+      <td><div class="row-av">${p.foto?`<img src="${p.foto}" onerror="this.style.display='none'">`:''}<span>${p.foto?'':((p.inisial||p.nama||'P').substring(0,2).toUpperCase())}</span></div></td>
+      <td><strong>${p.nama}</strong></td>
+      <td>${p.jabatan}</td>
+      <td>${p.urutan||1}</td>
+      <td><div class="tbl-acts">
+        <button class="btn-e" onclick="editPetugas('${p.id}')">✏ Edit</button>
+        <button class="btn-d" onclick="delPetugas('${p.id}','${p.nama}')">🗑</button>
+      </div></td>
+    </tr>`).join('');
+}
 
-    push(ref(db, 'petugas'), { nama, jabatan, nip, foto }).then(() => {
-      closeModal('addPetugas');
-      showToast('✅ Petugas tersimpan di Firebase!');
-    });
+window.openModal = function(id){ document.getElementById('modal-'+id).classList.add('open'); };
+window.closeModal = function(id){ document.getElementById('modal-'+id).classList.remove('open'); };
+window.addPetugas = function(){ openModal('petugas'); };
+
+document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+// Preview foto URL
+document.getElementById('mp_foto')?.addEventListener('input',function(){
+  const prev=document.getElementById('mp_preview');
+  if(this.value){prev.innerHTML=`<img src="${this.value}" style="max-width:100px;max-height:100px;border-radius:10px;object-fit:cover" onerror="this.style.opacity='.3'">`;}
+  else{prev.innerHTML='';}
+});
+
+window.editPetugas = async function(id){
+  const snap=await getDoc(doc(db,'petugas',id));
+  if(!snap.exists()) return;
+  const d=snap.data();
+  document.getElementById('mp_id').value         = id;
+  document.getElementById('mp_nama').value       = d.nama||'';
+  document.getElementById('mp_jabatan').value    = d.jabatan||'Kepala KUA';
+  document.getElementById('mp_badge').value      = d.badge||'';
+  document.getElementById('mp_urutan').value     = d.urutan||1;
+  document.getElementById('mp_inisial').value    = d.inisial||'';
+  document.getElementById('mp_deskripsi').value  = d.deskripsi||'';
+  document.getElementById('mp_foto').value       = d.foto||'';
+  const prev=document.getElementById('mp_preview');
+  prev.innerHTML=d.foto?`<img src="${d.foto}" style="max-width:100px;max-height:100px;border-radius:10px;object-fit:cover">`:''
+  document.getElementById('mPetugasTitle').textContent='✏️ Edit Petugas';
+  openModal('petugas');
+};
+
+window.savePetugas = async function(){
+  const btn=document.getElementById('mpSaveBtn');
+  btn.disabled=true; btn.textContent='Menyimpan...';
+  const id=document.getElementById('mp_id').value;
+  const data={
+    nama:    document.getElementById('mp_nama').value.trim(),
+    jabatan: document.getElementById('mp_jabatan').value,
+    badge:   document.getElementById('mp_badge').value.trim(),
+    urutan:  Number(document.getElementById('mp_urutan').value)||1,
+    inisial: document.getElementById('mp_inisial').value.trim().toUpperCase(),
+    deskripsi:document.getElementById('mp_deskripsi').value.trim(),
+    foto:    document.getElementById('mp_foto').value.trim(),
+    updatedAt:serverTimestamp(),
   };
+  try{
+    if(id){ await updateDoc(doc(db,'petugas',id),data); }
+    else   { await addDoc(collection(db,'petugas'),{...data,createdAt:serverTimestamp()}); }
+    closeModal('petugas');
+    showToast('✅ Data petugas berhasil disimpan!');
+    // reset form
+    ['mp_id','mp_nama','mp_badge','mp_inisial','mp_deskripsi','mp_foto'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('mPetugasTitle').textContent='👤 Tambah Petugas';
+    document.getElementById('mp_preview').innerHTML='';
+    loadPetugasTable();
+  }catch(e){showToast('❌ Gagal: '+e.message,true);}
+  finally{btn.disabled=false;btn.textContent='Simpan';}
+};
 
-  window.hapusData = (path, id) => {
-    if(confirm('Hapus data ini?')) {
-      remove(ref(db, `${path}/${id}`));
-      showToast('🗑 Data terhapus.');
-    }
-  };
+window.delPetugas = async function(id,nama){
+  if(!confirm(`Hapus petugas "${nama}"?`)) return;
+  await deleteDoc(doc(db,'petugas',id));
+  showToast('🗑 Petugas dihapus.');
+  loadPetugasTable();
+};
 
-  window.savePengumuman = () => {
-    const teks = document.querySelector('#panel-pengumuman textarea').value;
-    set(ref(db, 'pengumuman'), { teks });
-    showToast('💾 Pengumuman disimpan!');
-  };
-
-  const titles = {
-    dashboard: ['Dashboard', 'Ringkasan aktivitas KUA'],
-    hero: ['Header & Hero', 'Edit teks dan elemen halaman utama'],
-    pengumuman: ['Pengumuman', 'Kelola teks pengumuman berjalan'],
-    petugas: ['Petugas KUA', 'Kelola data petugas dan foto'],
-    statistik: ['Statistik', 'Perbarui data dan grafik pernikahan'],
-    ulasan: ['Ulasan', 'Kelola testimoni masyarakat'],
-    materi: ['Materi Bimwin', 'Kelola materi PDF dan video'],
-    konsultasi: ['Konsultasi Masuk', 'Pesan dari pengunjung website'],
-    info: ['Info Kantor', 'Alamat, telepon, dan jam operasional'],
-    footer: ['Footer', 'Edit teks dan tautan footer'],
-    seo: ['SEO & Meta', 'Pengaturan mesin pencari'],
-  };
-
-  if (titles[id]) {
-    document.getElementById('topbarTitle').textContent = titles[id][0];
-    document.getElementById('topbarSub').textContent = titles[id][1];
-  }
-
-  // Close mobile sidebar
-  closeSidebar();
+// ══════════════════════════════════════
+// ULASAN
+// ══════════════════════════════════════
+async function loadUlasanList(){
+  try{
+    const q=query(collection(db,'ulasan'),orderBy('urutan','asc'));
+    const snap=await getDocs(q);
+    const list=snap.docs.map(d=>({id:d.id,...d.data()}));
+    document.getElementById('bdgUlasan').textContent=list.length||'';
+    renderUlasanAdmin(list);
+  }catch{renderUlasanAdmin([]);}
 }
-  window.showPanel = function(id, el) { /* ... isi fungsi lama ... */ };
-  window.closeModal = function(id) { document.getElementById('modal-' + id).classList.remove('open'); };
-  window.showToast = function(msg) { /* ... isi fungsi lama ... */ };
 
-  <div class="modal-overlay" id="modal-login" style="background: var(--green-dark);">
-  <div class="modal-box" style="max-width: 400px; margin: auto;">
-    <div class="logo-circle" style="margin: 0 auto 20px;">KUA</div>
-    <h3 style="text-align: center;">Login Administrator</h3>
-    <div class="frow single">
-      <div class="fgroup"><label>Email</label><input type="email" id="loginEmail" placeholder="admin@email.com" /></div>
-    </div>
-    <div class="frow single">
-      <div class="fgroup"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••" /></div>
-    </div>
-    <button class="btn-confirm" style="width: 100%; margin-top: 10px;" onclick="loginAdmin()">Masuk</button>
-  </div>
-</div>
-
-<div class="panel" id="panel-pengaturan">
-  <div class="card">
-    <div class="card-header"><h3>⚙️ Pengaturan Keamanan Akun</h3></div>
-    <div class="card-body">
-      <div class="frow single">
-        <div class="fgroup">
-          <label>Password Baru</label>
-          <input type="password" id="newAdminPassword" placeholder="Masukkan password baru (min 6 karakter)" />
-          <span class="hint">Password ini dienkripsi di server Firebase, tidak akan terlihat di source code.</span>
-        </div>
+function renderUlasanAdmin(list){
+  const el=document.getElementById('ulasanList');
+  if(!list.length){el.innerHTML='<div style="color:#a0aec0">Belum ada ulasan.</div>';return;}
+  el.innerHTML=list.map(u=>`
+    <div class="ul-item">
+      <div>
+        <div class="ul-name">${u.nama} — <span style="font-size:12px;color:#718096">${u.tanggal}</span></div>
+        <div class="ul-rating">${'★'.repeat(u.rating||5)}${'☆'.repeat(5-(u.rating||5))}</div>
+        <div class="ul-txt">${u.teks}</div>
       </div>
-      <button class="btn-save" onclick="updatePasswordAdmin()">💾 Simpan Password</button>
-    </div>
-  </div>
-</div>
+      <div class="tbl-acts">
+        <button class="btn-e" onclick="editUlasan('${u.id}')">✏</button>
+        <button class="btn-d" onclick="delUlasan('${u.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+window.editUlasan = async function(id){
+  const snap=await getDoc(doc(db,'ulasan',id));
+  if(!snap.exists()) return;
+  const d=snap.data();
+  document.getElementById('mu_id').value      = id;
+  document.getElementById('mu_nama').value    = d.nama||'';
+  document.getElementById('mu_tanggal').value = d.tanggal||'';
+  document.getElementById('mu_rating').value  = d.rating||5;
+  document.getElementById('mu_urutan').value  = d.urutan||1;
+  document.getElementById('mu_teks').value    = d.teks||'';
+  document.getElementById('mUlasanTitle').textContent='✏️ Edit Ulasan';
+  openModal('ulasan');
+};
+
+window.saveUlasan = async function(){
+  const btn=document.getElementById('muSaveBtn');
+  btn.disabled=true;btn.textContent='Menyimpan...';
+  const id=document.getElementById('mu_id').value;
+  const data={
+    nama:    document.getElementById('mu_nama').value.trim(),
+    tanggal: document.getElementById('mu_tanggal').value.trim(),
+    rating:  Number(document.getElementById('mu_rating').value),
+    urutan:  Number(document.getElementById('mu_urutan').value)||1,
+    teks:    document.getElementById('mu_teks').value.trim(),
+  };
+  try{
+    if(id){ await updateDoc(doc(db,'ulasan',id),data); }
+    else   { await addDoc(collection(db,'ulasan'),{...data,createdAt:serverTimestamp()}); }
+    closeModal('ulasan');
+    showToast('✅ Ulasan berhasil disimpan!');
+    ['mu_id','mu_nama','mu_tanggal','mu_teks'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('mUlasanTitle').textContent='⭐ Tambah Ulasan';
+    loadUlasanList();
+  }catch(e){showToast('❌ '+e.message,true);}
+  finally{btn.disabled=false;btn.textContent='Simpan';}
+};
+
+window.delUlasan = async function(id){
+  if(!confirm('Hapus ulasan ini?')) return;
+  await deleteDoc(doc(db,'ulasan',id));
+  showToast('🗑 Ulasan dihapus.');
+  loadUlasanList();
+};
+
+// ══════════════════════════════════════
+// MATERI
+// ══════════════════════════════════════
+async function loadMateriList(){
+  try{
+    const q=query(collection(db,'materi'),orderBy('urutan','asc'));
+    const snap=await getDocs(q);
+    const list=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderMateriAdmin(list);
+  }catch{renderMateriAdmin([]);}
+}
+
+function renderMateriAdmin(list){
+  const el=document.getElementById('materiList');
+  if(!list.length){el.innerHTML='<div style="color:#a0aec0">Belum ada materi.</div>';return;}
+  el.innerHTML=list.map(m=>`
+    <div class="mat-item">
+      <div class="mat-ic ${m.tipe}">${m.tipe==='pdf'?'📄':'▶'}</div>
+      <div class="mat-info">
+        <h4>${m.judul}</h4>
+        <div class="mat-link">${m.tipe==='pdf'?'📁':'🎬'} ${m.link||'— link belum diisi'}</div>
+      </div>
+      <div class="mat-acts">
+        <span class="badge ${m.tipe==='pdf'?'bg-green':'bg-red'}">${m.tipe.toUpperCase()}</span>
+        <button class="btn-e" onclick="editMateri('${m.id}')">✏</button>
+        <button class="btn-d" onclick="delMateri('${m.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+window.toggleMateriLink = function(){
+  const t=document.getElementById('mm_tipe').value;
+  document.getElementById('row-pdf').style.display=t==='pdf'?'':'none';
+  document.getElementById('row-vid').style.display=t==='video'?'':'none';
+};
+
+window.editMateri = async function(id){
+  const snap=await getDoc(doc(db,'materi',id));
+  if(!snap.exists()) return;
+  const d=snap.data();
+  document.getElementById('mm_id').value       = id;
+  document.getElementById('mm_judul').value    = d.judul||'';
+  document.getElementById('mm_deskripsi').value= d.deskripsi||'';
+  document.getElementById('mm_tipe').value     = d.tipe||'pdf';
+  document.getElementById('mm_urutan').value   = d.urutan||1;
+  const isPdf=d.tipe==='pdf';
+  document.getElementById('mm_link').value    = isPdf?d.link||'':'';
+  document.getElementById('mm_linkVid').value = !isPdf?d.link||'':'';
+  document.getElementById('row-pdf').style.display=isPdf?'':'none';
+  document.getElementById('row-vid').style.display=!isPdf?'':'none';
+  document.getElementById('mMateriTitle').textContent='✏️ Edit Materi';
+  openModal('materi');
+};
+
+window.saveMateri = async function(){
+  const btn=document.getElementById('mmSaveBtn');
+  btn.disabled=true;btn.textContent='Menyimpan...';
+  const id=document.getElementById('mm_id').value;
+  const tipe=document.getElementById('mm_tipe').value;
+  const link=tipe==='pdf'?document.getElementById('mm_link').value.trim():document.getElementById('mm_linkVid').value.trim();
+  const data={
+    judul:     document.getElementById('mm_judul').value.trim(),
+    deskripsi: document.getElementById('mm_deskripsi').value.trim(),
+    tipe,link,
+    urutan:    Number(document.getElementById('mm_urutan').value)||1,
+  };
+  try{
+    if(id){ await updateDoc(doc(db,'materi',id),data); }
+    else   { await addDoc(collection(db,'materi'),{...data,createdAt:serverTimestamp()}); }
+    closeModal('materi');
+    showToast('✅ Materi berhasil disimpan!');
+    ['mm_id','mm_judul','mm_deskripsi','mm_link','mm_linkVid'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('mMateriTitle').textContent='📚 Tambah Materi';
+    loadMateriList();
+  }catch(e){showToast('❌ '+e.message,true);}
+  finally{btn.disabled=false;btn.textContent='Simpan';}
+};
+
+window.delMateri = async function(id){
+  if(!confirm('Hapus materi ini?')) return;
+  await deleteDoc(doc(db,'materi',id));
+  showToast('🗑 Materi dihapus.');
+  loadMateriList();
+};
+
+// ══════════════════════════════════════
+// KONSULTASI
+// ══════════════════════════════════════
+async function loadKonsulList(){
+  try{
+    const snap=await getDocs(collection(db,'konsultasi'));
+    _allKonsultasi=snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>((b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)));
+    filterKonsul();
+  }catch{document.getElementById('konsulList').innerHTML='<div style="color:#a0aec0">Gagal memuat.</div>';}
+}
+
+window.filterKonsul = function(){
+  const f=document.getElementById('konsulFilter').value;
+  const list=f==='semua'?_allKonsultasi:_allKonsultasi.filter(k=>k.status===f);
+  renderKonsulAdmin(list);
+};
+
+function renderKonsulAdmin(list){
+  const el=document.getElementById('konsulList');
+  if(!list.length){el.innerHTML='<div style="color:#a0aec0;padding:16px">Tidak ada pesan.</div>';return;}
+  el.innerHTML=list.map(k=>`
+    <div class="konsul-item ${k.status==='baru'?'unread':''}" onclick="openKonsul('${k.id}')">
+      <div class="konsul-hd">
+        <div class="konsul-name">${k.nama} <span style="font-size:11px;color:#a0aec0">· ${k.telp}</span></div>
+        <span class="badge ${k.status==='baru'?'bg-gold':k.status==='diproses'?'bg-blue':'bg-green'}">${k.status}</span>
+      </div>
+      <div class="konsul-topik">📌 ${k.topik}</div>
+      <div class="konsul-msg">${(k.pesan||'').substring(0,120)}${(k.pesan||'').length>120?'...':''}</div>
+    </div>`).join('');
+}
+
+let _activeKonsulId='';
+window.openKonsul = function(id){
+  const k=_allKonsultasi.find(x=>x.id===id); if(!k) return;
+  _activeKonsulId=id;
+  const d=document.getElementById('konsulDetail');
+  d.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div><label style="font-size:11px;color:#718096;font-weight:700;text-transform:uppercase">Nama</label><div style="font-size:15px;font-weight:700;color:var(--gd)">${k.nama}</div></div>
+      <div><label style="font-size:11px;color:#718096;font-weight:700;text-transform:uppercase">Telepon</label><div style="font-size:14px">${k.telp}</div></div>
+      <div><label style="font-size:11px;color:#718096;font-weight:700;text-transform:uppercase">Topik</label><div style="font-size:14px;color:var(--gm);font-weight:600">${k.topik}</div></div>
+      <div><label style="font-size:11px;color:#718096;font-weight:700;text-transform:uppercase">Pesan</label><div style="font-size:14px;line-height:1.7;background:#f7fafc;border-radius:8px;padding:12px">${k.pesan}</div></div>
+      <div><label style="font-size:11px;color:#718096;font-weight:700;text-transform:uppercase">Status</label>
+        <select id="konsulStatusSel" style="border:1.5px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-family:'Tajawal',sans-serif">
+          <option value="baru" ${k.status==='baru'?'selected':''}>Baru</option>
+          <option value="diproses" ${k.status==='diproses'?'selected':''}>Diproses</option>
+          <option value="selesai" ${k.status==='selesai'?'selected':''}>Selesai</option>
+        </select>
+      </div>
+    </div>`;
+  openModal('konsultasi');
+};
+
+window.updateKonsulStatus = async function(){
+  if(!_activeKonsulId) return;
+  const status=document.getElementById('konsulStatusSel').value;
+  const btn=document.getElementById('konsulOkBtn');
+  btn.disabled=true;
+  try{
+    await updateDoc(doc(db,'konsultasi',_activeKonsulId),{status});
+    closeModal('konsultasi');
+    showToast('✅ Status diperbarui!');
+    loadKonsulList();
+    loadDashboard();
+  }catch(e){showToast('❌ '+e.message,true);}
+  finally{btn.disabled=false;}
+};
+
+// ══════════════════════════════════════
+// INFO KANTOR & FOOTER (via siteConfig)
+// ══════════════════════════════════════
+async function loadInfoForm(){ await loadHeroForm(); }
+async function loadFooterForm(){ await loadHeroForm(); }
+async function loadSeoForm(){ await loadHeroForm(); }
+
+// ══════════════════════════════════════
+// SETTING AKUN
+// ══════════════════════════════════════
+window.updateAkun = async function(){
+  const emailNew  = document.getElementById('akun_emailNew').value.trim();
+  const pwNew     = document.getElementById('akun_pwNew').value;
+  const pwConfirm = document.getElementById('akun_pwConfirm').value;
+  const pwCurrent = document.getElementById('akun_pwCurrent').value;
+
+  if(!pwCurrent){ showToast('⚠ Masukkan password saat ini untuk verifikasi.',true); return; }
+  if(pwNew && pwNew!==pwConfirm){ showToast('⚠ Password baru tidak cocok.',true); return; }
+  if(pwNew && pwNew.length<8){ showToast('⚠ Password minimal 8 karakter.',true); return; }
+
+  showLoading(true);
+  try{
+    // Re-authenticate first
+    const cred=EmailAuthProvider.credential(currentUser.email, pwCurrent);
+    await reauthenticateWithCredential(currentUser, cred);
+    // Update email if changed
+    if(emailNew && emailNew!==currentUser.email){
+      await updateEmail(currentUser, emailNew);
+      document.getElementById('akun_emailNow').value=emailNew;
+      document.getElementById('sbEmail').textContent=emailNew;
+    }
+    // Update password if filled
+    if(pwNew){ await updatePassword(currentUser, pwNew); }
+    showToast('✅ Akun berhasil diperbarui!');
+    ['akun_emailNew','akun_pwNew','akun_pwConfirm','akun_pwCurrent'].forEach(f=>document.getElementById(f).value='');
+  }catch(e){
+    const map={'auth/wrong-password':'Password saat ini salah.','auth/email-already-in-use':'Email sudah digunakan.','auth/invalid-email':'Format email tidak valid.'};
+    showToast('❌ '+(map[e.code]||e.message),true);
+  }finally{showLoading(false);}
+};
+
+// ══════════════════════════════════════
+// SAVE CURRENT PANEL
+// ══════════════════════════════════════
+window.saveCurrentPanel = async function(){
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true; btn.textContent='⏳ Menyimpan...';
+  showLoading(true);
+  try{
+    if(window._currentPanel==='hero'||window._currentPanel==='pengumuman'||window._currentPanel==='infokantor'||window._currentPanel==='footer'||window._currentPanel==='seo'){
+      await saveHeroConfig();
+    } else if(window._currentPanel==='statistik'){
+      await saveStatistik();
+    }
+    showToast('✅ Perubahan berhasil disimpan!');
+  }catch(e){showToast('❌ Gagal: '+e.message,true);}
+  finally{btn.disabled=false;btn.textContent='💾 Simpan';showLoading(false);}
+};
+
+function showLoading(v){document.getElementById('loadingOv').classList.toggle('show',v);}
+</script>
+
+<script>
+// ══ UI HELPERS (non-module) ══
+const PANEL_TITLES={
+  dashboard:['Dashboard','Ringkasan aktivitas KUA'],
+  hero:['Header & Hero','Edit teks dan elemen halaman utama'],
+  pengumuman:['Pengumuman','Kelola teks berjalan di bagian atas'],
+  petugas:['Petugas KUA','Kelola data dan foto petugas'],
+  statistik:['Statistik','Perbarui data dan grafik pernikahan'],
+  ulasan:['Ulasan','Kelola testimoni masyarakat'],
+  materi:['Materi Bimwin','Kelola modul PDF dan video YouTube'],
+  konsultasi:['Konsultasi Masuk','Pesan dari pengunjung website'],
+  infokantor:['Info Kantor','Alamat, telepon, dan jam operasional'],
+  footer:['Footer & Sosmed','Teks footer dan tautan sosial media'],
+  akun:['Setting Akun','Ubah email dan password admin'],
+  seo:['SEO & Meta','Pengaturan mesin pencari'],
+};
+
+window._currentPanel='dashboard';
+
+function showPanel(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  const t=PANEL_TITLES[id]||[id,''];
+  document.getElementById('tbTitle').textContent=t[0];
+  document.getElementById('tbSub').textContent=t[1];
+  window._currentPanel=id;
+  const saveable=['hero','pengumuman','statistik','infokantor','footer','seo'];
+  document.getElementById('saveBtn').style.display=saveable.includes(id)?'':'none';
+  closeSb();
+}
+
+function toggleFs(hd){
+  const bd=hd.nextElementSibling;
+  const tgl=hd.querySelector('.fs-tgl');
+  bd.classList.toggle('open');
+  tgl.classList.toggle('open');
+}
+
+function openModal(id){ document.getElementById('modal-'+id).classList.add('open'); }
+function closeModal(id){ document.getElementById('modal-'+id).classList.remove('open'); }
+
+function toggleSb(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOv').style.display=document.getElementById('sidebar').classList.contains('open')?'block':'none';
+}
+function closeSb(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOv').style.display='none';
+}
+
+function showToast(msg,isErr=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show'+(isErr?' err':'');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+function togglePw(id){
+  const i=document.getElementById(id);
+  i.type=i.type==='password'?'text':'password';
+}
+
+// Month inputs for stat form
+const MONTHS=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+document.addEventListener('DOMContentLoaded',()=>{
+  ['monthNikah','monthCerai'].forEach(cid=>{
+    const el=document.getElementById(cid);
+    if(!el) return;
+    el.innerHTML=MONTHS.map((m,i)=>`
+      <div class="month-ic"><label>${m}</label><input type="number" id="${cid}_${i}" value="0" min="0"/></div>`).join('');
+  });
+});
 </script>
 </body>
 </html>
