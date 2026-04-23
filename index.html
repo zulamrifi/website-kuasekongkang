@@ -702,36 +702,87 @@ const DEFAULTS = {
   }
 };
 
-// ─── LOAD CONFIG ───
+// --- LOAD CONFIG ---
 async function loadConfig(){
-  try{
-    const snap = await getDoc(doc(db,'siteConfig','main'));
-    const cfg  = snap.exists() ? {...DEFAULTS.siteConfig,...snap.data()} : DEFAULTS.siteConfig;
-    applyConfig(cfg);
-  }catch{applyConfig(DEFAULTS.siteConfig);}
+  try {
+    const snap = await getDoc(doc(db, 'siteConfig', 'main'));
+    const dbData = snap.exists() ? snap.data() : {};
+    
+    // Gabungkan default dengan data DB, tapi abaikan string kosong/null dari DB
+    const finalConfig = { ...DEFAULTS.siteConfig };
+    for (const key in dbData) {
+      if (dbData[key] !== "" && dbData[key] !== null && dbData[key] !== undefined) {
+        finalConfig[key] = dbData[key];
+      }
+    }
+    applyConfig(finalConfig);
+  } catch(e) {
+    console.error("Error loading config:", e);
+    applyConfig(DEFAULTS.siteConfig);
+  }
 }
 
 function applyConfig(c){
-  const set=(id,val)=>{const el=document.getElementById(id);if(el&&val!==undefined)el.textContent=val;};
-  set('heroArabic',c.heroArabic);set('heroTitle',c.heroTitle);set('heroSubtitle',c.heroSubtitle);
-  set('heroStatYear',c.heroStatYear);set('hStat1',c.hStat1);set('hStat1L',c.hStat1L);
-  set('hStat2',c.hStat2);set('hStat2L',c.hStat2L);set('hStat3',c.hStat3);set('hStat3L',c.hStat3L);
-  set('hStat4',c.hStat4);set('hStat4L',c.hStat4L);
-  set('floatNikah',c.hStat1);
-  set('chartTitle',c.chartTitle);
+  // Helper: Hanya update jika elemen ada dan nilai baru tidak kosong
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined && val !== null && val !== "") {
+      el.textContent = val;
+    }
+  };
+
+  set('heroArabic', c.heroArabic);
+  set('heroTitle', c.heroTitle);
+  set('heroSubtitle', c.heroSubtitle);
+  set('heroStatYear', c.heroStatYear);
+  set('hStat1', c.hStat1);
+  set('hStat1L', c.hStat1L);
+  set('hStat2', c.hStat2);
+  set('hStat2L', c.hStat2L);
+  set('hStat3', c.hStat3);
+  set('hStat3L', c.hStat3L);
+  set('hStat4', c.hStat4);
+  set('hStat4L', c.hStat4L);
+  set('floatNikah', c.hStat1);
+  set('chartTitle', c.chartTitle);
+  
+  // Tombol Hero agar tidak hilang
+  set('heroBtnPrimary', c.heroBtnPrimary);
+  set('heroBtnSecond', c.heroBtnSecond);
+
   // Pengumuman
-  const pt=document.getElementById('pgmmText');
-  if(pt&&c.pengumuman){pt.textContent=c.pengumuman+' | '+c.pengumuman;}
-  // Info
-  if(c.infoAlamat){const el=document.getElementById('infoAlamat');if(el)el.innerHTML=c.infoAlamat.replace(/\n/g,'<br>');}
-  if(c.infoTelp){const el=document.getElementById('infoTelp');if(el)el.innerHTML=c.infoTelp.replace(/\n/g,'<br>');}
-  if(c.infoJam){const el=document.getElementById('infoJam');if(el)el.innerHTML=c.infoJam.replace(/\n/g,'<br>');}
-  set('infoEmail',c.infoEmail);
-  if(c.mapSrc){const mf=document.getElementById('mapFrame');if(mf)mf.src=c.mapSrc;}
-  set('footerDesc',c.footerDesc);set('footerCopy',c.footerCopy);
-  const links={fbLink:c.fbLink,igLink:c.igLink,ytLink:c.ytLink,waLink:c.waLink};
-  Object.entries(links).forEach(([id,href])=>{const el=document.getElementById(id);if(el&&href)el.href=href;});
-  set('heroBtnPrimary',c.heroBtnPrimary);set('heroBtnSecond',c.heroBtnSecond);
+  const pt = document.getElementById('pgmmText');
+  if (pt && c.pengumuman) {
+    pt.textContent = c.pengumuman + ' | ' + c.pengumuman;
+  }
+
+  // Bagian Info Kantor (innerHTML untuk menangani baris baru)
+  const updateHTML = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val !== "" && val !== null && val !== undefined) {
+      el.innerHTML = val.replace(/\n/g, '<br>');
+    }
+  };
+
+  updateHTML('infoAlamat', c.infoAlamat);
+  updateHTML('infoTelp', c.infoTelp);
+  updateHTML('infoJam', c.infoJam);
+  
+  set('infoEmail', c.infoEmail);
+  
+  if (c.mapSrc) {
+    const mf = document.getElementById('mapFrame');
+    if (mf) mf.src = c.mapSrc;
+  }
+
+  set('footerDesc', c.footerDesc);
+  set('footerCopy', c.footerCopy);
+
+  const links = { fbLink: c.fbLink, igLink: c.igLink, ytLink: c.ytLink, waLink: c.waLink };
+  Object.entries(links).forEach(([id, href]) => {
+    const el = document.getElementById(id);
+    if (el && href) el.href = href;
+  });
 }
 
 // ─── LOAD STATISTIK ───
