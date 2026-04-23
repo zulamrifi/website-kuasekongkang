@@ -27,7 +27,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;
 .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;
   justify-content:space-between;height:68px;}
 .nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:white;}
-.nav-logo-c{width:44px;height:44px;border-radius:50%;
+.nav-logo-img {
+  width: 44px; /* Sesuaikan ukuran jika kurang besar/kecil */
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;}
   background:linear-gradient(135deg,var(--gold),var(--gld));
   display:flex;align-items:center;justify-content:center;
   font-family:'Amiri',serif;font-size:20px;font-weight:700;color:var(--gd);flex-shrink:0;}
@@ -402,11 +406,11 @@ footer{background:var(--gd);color:rgba(255,255,255,.7);}
 <nav>
   <div class="nav-inner">
     <a href="#hero" class="nav-brand">
-      <div class="nav-logo-c">KUA</div>
+      <img src="logo.png" alt="Logo KUA" class="nav-logo-img">
       <div class="nav-brand-t">
         <span>Kantor Urusan Agama</span>
         <span>Kec. Sekongkang</span>
-      </div>
+        </div>
     </a>
     <ul class="nav-links">
   <li><a href="#hero">Beranda</a></li>
