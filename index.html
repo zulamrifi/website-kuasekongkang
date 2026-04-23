@@ -912,24 +912,6 @@ window.filterMateri=function(type,btn){
   renderMateri(type);
 };
 
-// ─── KONSULTASI SUBMIT ───
-window.submitKonsultasi=async function(){
-  const nama  = document.getElementById('kNama').value.trim();
-  const telp  = document.getElementById('kTelp').value.trim();
-  const topik = document.getElementById('kTopik').value;
-  const pesan = document.getElementById('kPesan').value.trim();
-  const btn   = document.getElementById('submitKonsul');
-  if(!nama||!telp||!topik||!pesan){showNotif('⚠ Mohon lengkapi semua isian.');return;}
-  btn.disabled=true;btn.textContent='⏳ Mengirim...';
-  try{
-    await addDoc(collection(db,'konsultasi'),{nama,telp,topik,pesan,status:'baru',createdAt:serverTimestamp()});
-    showNotif('✅ Pesan Anda terkirim! Kami akan segera menghubungi Anda.');
-    ['kNama','kTelp','kPesan'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('kTopik').value='';
-  }catch(e){showNotif('❌ Gagal mengirim. Periksa koneksi internet Anda.');}
-  finally{btn.disabled=false;btn.textContent='✉ Kirim Pesan';}
-};
-
 // ─── COUNTER ANIMATION ───
 let countersStarted=false;
 function startCounters(){
