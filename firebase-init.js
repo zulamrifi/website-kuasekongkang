@@ -2,7 +2,7 @@
 // FIREBASE INIT — public/firebase-init.js
 // ⚠️  GANTI NILAI DI BAWAH DENGAN KONFIGURASI FIREBASE ANDA
 // ============================================================
-const firebaseConfig = {
+const FIREBASE_CONFIG = {
   apiKey: "AIzaSyA95tw-ECPzfIH9eJmi3VxFYoGzRQdiwWM",
   authDomain: "website-kuasekongkang.firebaseapp.com",
   databaseURL: "https://website-kuasekongkang-default-rtdb.asia-southeast1.firebasedatabase.app",
