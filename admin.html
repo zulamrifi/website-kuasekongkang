@@ -434,7 +434,10 @@ tr:hover td{background:#fafcfb;}
   <!-- ══ ULASAN ══ -->
   <div class="panel" id="panel-ulasan">
     <div class="card">
-      <div class="card-hd"><h3>⭐ Kelola Ulasan</h3><button class="btn-add" onclick="openModal('addUlasan')">+ Tambah Ulasan</button></div>
+      <<div class="card-hd">
+  <h3>⭐ Kelola Ulasan</h3>
+  <button class="btn-add" onclick="addUlasan()">+ Tambah Ulasan</button>
+</div>
       <div class="card-bd"><div class="ul-list" id="ulasanList"><div style="color:#a0aec0">Memuat...</div></div></div>
     </div>
   </div>
@@ -983,27 +986,72 @@ window.editUlasan = async function(id){
   openModal('ulasan');
 };
 
+  window.addUlasan = function() {
+  // 1. Reset semua input form ulasan
+  document.getElementById('mu_id').value = "";
+  document.getElementById('mu_nama').value = "";
+  document.getElementById('mu_tanggal').value = "";
+  document.getElementById('mu_rating').value = 5; // Default bintang 5
+  document.getElementById('mu_urutan').value = 1;
+  document.getElementById('mu_teks').value = "";
+  
+  // 2. Kembalikan judul modal ke mode "Tambah"
+  document.getElementById('mUlasanTitle').textContent = '⭐ Tambah Ulasan';
+  
+  // 3. Buka modal dengan ID yang benar
+  openModal('ulasan');
+};
+
 window.saveUlasan = async function(){
-  const btn=document.getElementById('muSaveBtn');
-  btn.disabled=true;btn.textContent='Menyimpan...';
-  const id=document.getElementById('mu_id').value;
-  const data={
-    nama:    document.getElementById('mu_nama').value.trim(),
-    tanggal: document.getElementById('mu_tanggal').value.trim(),
-    rating:  Number(document.getElementById('mu_rating').value),
-    urutan:  Number(document.getElementById('mu_urutan').value)||1,
-    teks:    document.getElementById('mu_teks').value.trim(),
+  const btn = document.getElementById('muSaveBtn');
+  const id = document.getElementById('mu_id').value;
+  
+  // Ambil data input
+  const nama = document.getElementById('mu_nama').value.trim();
+  const teks = document.getElementById('mu_teks').value.trim();
+
+  // Validasi sederhana
+  if (!nama || !teks) {
+    showToast('⚠ Nama dan Isi ulasan tidak boleh kosong!', true);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Menyimpan...';
+
+  const data = {
+    nama: nama,
+    tanggal: document.getElementById('mu_tanggal').value.trim() || 'Baru-baru ini',
+    rating: Number(document.getElementById('mu_rating').value),
+    urutan: Number(document.getElementById('mu_urutan').value) || 1,
+    teks: teks,
+    updatedAt: serverTimestamp()
   };
-  try{
-    if(id){ await updateDoc(doc(db,'ulasan',id),data); }
-    else   { await addDoc(collection(db,'ulasan'),{...data,createdAt:serverTimestamp()}); }
+
+  try {
+    if (id) {
+      // Update data yang sudah ada
+      await updateDoc(doc(db, 'ulasan', id), data);
+      showToast('✅ Ulasan berhasil diperbarui!');
+    } else {
+      // Tambah ulasan baru
+      await addDoc(collection(db, 'ulasan'), { 
+        ...data, 
+        createdAt: serverTimestamp() 
+      });
+      showToast('✅ Ulasan baru berhasil ditambahkan!');
+    }
+    
     closeModal('ulasan');
-    showToast('✅ Ulasan berhasil disimpan!');
-    ['mu_id','mu_nama','mu_tanggal','mu_teks'].forEach(f=>document.getElementById(f).value='');
-    document.getElementById('mUlasanTitle').textContent='⭐ Tambah Ulasan';
-    loadUlasanList();
-  }catch(e){showToast('❌ '+e.message,true);}
-  finally{btn.disabled=false;btn.textContent='Simpan';}
+    loadUlasanList(); // Refresh daftar ulasan di tabel admin
+    loadDashboard();  // Refresh total ulasan di dashboard
+  } catch (e) {
+    console.error("Error simpan ulasan:", e);
+    showToast('❌ Gagal menyimpan: ' + e.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Simpan';
+  }
 };
 
 window.delUlasan = async function(id){
