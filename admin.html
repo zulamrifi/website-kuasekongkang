@@ -442,7 +442,10 @@ tr:hover td{background:#fafcfb;}
   <!-- ══ MATERI ══ -->
   <div class="panel" id="panel-materi">
     <div class="card">
-      <div class="card-hd"><h3>📚 Kelola Materi Bimwin</h3><button class="btn-add" onclick="openModal('addMateri')">+ Tambah Materi</button></div>
+      <div class="card-hd">
+  <h3>📚 Kelola Materi Bimwin</h3>
+  <button class="btn-add" onclick="addMateri()">+ Tambah Materi</button>
+</div>
       <div class="card-bd"><div class="materi-list" id="materiList"><div style="color:#a0aec0">Memuat...</div></div></div>
     </div>
   </div>
@@ -1065,34 +1068,79 @@ window.editMateri = async function(id){
 };
 
 window.saveMateri = async function(){
-  const btn=document.getElementById('mmSaveBtn');
-  btn.disabled=true;btn.textContent='Menyimpan...';
-  const id=document.getElementById('mm_id').value;
-  const tipe=document.getElementById('mm_tipe').value;
-  const link=tipe==='pdf'?document.getElementById('mm_link').value.trim():document.getElementById('mm_linkVid').value.trim();
-  const data={
-    judul:     document.getElementById('mm_judul').value.trim(),
-    deskripsi: document.getElementById('mm_deskripsi').value.trim(),
-    tipe,link,
-    urutan:    Number(document.getElementById('mm_urutan').value)||1,
-  };
-  try{
-    if(id){ await updateDoc(doc(db,'materi',id),data); }
-    else   { await addDoc(collection(db,'materi'),{...data,createdAt:serverTimestamp()}); }
-    closeModal('materi');
-    showToast('✅ Materi berhasil disimpan!');
-    ['mm_id','mm_judul','mm_deskripsi','mm_link','mm_linkVid'].forEach(f=>document.getElementById(f).value='');
-    document.getElementById('mMateriTitle').textContent='📚 Tambah Materi';
-    loadMateriList();
-  }catch(e){showToast('❌ '+e.message,true);}
-  finally{btn.disabled=false;btn.textContent='Simpan';}
-};
+  const btn = document.getElementById('mmSaveBtn');
+  const id = document.getElementById('mm_id').value;
+  const tipe = document.getElementById('mm_tipe').value;
+  
+  // Ambil nilai input
+  const judul = document.getElementById('mm_judul').value.trim();
+  const link = tipe === 'pdf' ? document.getElementById('mm_link').value.trim() : document.getElementById('mm_linkVid').value.trim();
+  
+  // Validasi: Cegah simpan jika judul atau link kosong
+  if (!judul || !link) {
+    showToast('⚠ Judul dan Link materi wajib diisi!', true);
+    return;
+  }
 
+  btn.disabled = true;
+  btn.textContent = 'Menyimpan...';
+  
+  const data = {
+    judul: judul,
+    deskripsi: document.getElementById('mm_deskripsi').value.trim(),
+    tipe: tipe,
+    link: link,
+    urutan: Number(document.getElementById('mm_urutan').value) || 1,
+    updatedAt: serverTimestamp()
+  };
+  
+  try {
+    if (id) {
+      await updateDoc(doc(db, 'materi', id), data);
+      showToast('✅ Materi berhasil diperbarui!');
+    } else {
+      await addDoc(collection(db, 'materi'), { ...data, createdAt: serverTimestamp() });
+      showToast('✅ Materi baru berhasil ditambahkan!');
+    }
+    
+    closeModal('materi');
+    loadMateriList(); // Refresh daftar materi
+    loadDashboard();  // Refresh counter di dashboard
+  } catch (e) {
+    console.error("Error simpan materi:", e);
+    showToast('❌ Gagal menyimpan: ' + e.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Simpan';
+  }
+};
+  
 window.delMateri = async function(id){
   if(!confirm('Hapus materi ini?')) return;
   await deleteDoc(doc(db,'materi',id));
   showToast('🗑 Materi dihapus.');
   loadMateriList();
+};
+
+  window.addMateri = function() {
+  // 1. Reset semua input
+  document.getElementById('mm_id').value = "";
+  document.getElementById('mm_judul').value = "";
+  document.getElementById('mm_deskripsi').value = "";
+  document.getElementById('mm_tipe').value = "pdf"; // Default ke PDF
+  document.getElementById('mm_urutan').value = 1;
+  document.getElementById('mm_link').value = "";
+  document.getElementById('mm_linkVid').value = "";
+  
+  // 2. Sesuaikan tampilan input link berdasarkan tipe default (PDF)
+  document.getElementById('row-pdf').style.display = '';
+  document.getElementById('row-vid').style.display = 'none';
+  
+  // 3. Kembalikan judul modal
+  document.getElementById('mMateriTitle').textContent = '📚 Tambah Materi';
+  
+  // 4. Buka modal yang benar
+  openModal('materi');
 };
 
 // ══════════════════════════════════════
